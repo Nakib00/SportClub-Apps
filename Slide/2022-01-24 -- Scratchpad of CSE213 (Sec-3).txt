@@ -1,0 +1,342 @@
+2022-01-24 -- Scratchpad of CSE213 (Sec-3)
+==========================================
+Application type:
+	- Web Application	(there is a dedicated course @ IUB on web application)
+	- Mibile Application	(there is a dedicated course @ IUB on mobile application)
+	- Desktop Application	(in 213, you will develop a desktop application, as your course project)
+
+Application development:
+	- On-the-shelf app (generic app)
+		calculator, word, premier-pro, anvi-virus
+	- Customized for a specific customer
+		IRAS, Bkash, 
+
+
+Q: As a developer, how would you know the requirements of an application?
+A:
+   Step-1:
+	- meetings with core team
+	- conducting surveys
+	- interviewing representative from each user type
+	- Online/offline research
+	- ......
+
+   Step-2:
+	- Confirm with the client about what you (developer company) understood about client's requirements
+	   : by providing a structured/templated document (Customer Requirement Analysis Report) 
+		to the client to review
+
+
+------------------------------------------------
+Q: What is an object?
+A:	struct/class variable are called object 
+
+struct Student{
+	//....
+};
+
+class Employee{
+	//...
+};
+
+type		variable
+-------		---------
+int 		x;
+Student 	asif;	(asif is a Student object)
+Employee	shafiq;	(shafiq is an Employee object)
+
+
+struct Student{
+	string courseIds[50];
+	string grades[50];
+	int credits[50];
+	int id; string name; float cgpa;
+};
+
+
+
+float getCgpaOfAStudent(Student s){
+	s.cgpa = ...code to calculate cgpa from those 3 arrays for s
+	return s.cgpa;
+}
+
+int main(){
+
+	Student asif, shafiq, luna;
+	float cg = ...code to calculate cgpa from those 3 arrays for asif
+	cout<<"Asif's cgpa = " << cg <<endl;
+	
+	cout<<"Luna's cgpa = " << getCgpaOfAStudent(luna) <<endl;
+}
+
+
+Q: What is linked-list?
+A: Collection of nodes connected in a series
+
+struct Node{
+	// member: a) member data, b) member function, a.k.a method
+	int val; 	//member data, a.k.a field
+	Node *next;	//member data, a.k.a field
+
+	Node* getNext(){ return next;}	//method
+	void setVal(int x){ val = x; }	//method
+};
+
+type	variable
+int 	x;		//int variable
+Node	*head;		//pointer to a struct variable (pointer to an object)
+Node	n;		//struct variable (object)
+
+OR
+class Node{
+	//
+}
+
+IRAS: 
+class Document{...}
+
+class Student{
+	string grades[50];
+	int credits[50];
+	int id; string name; float cgpa;
+
+	void doAssignment(Document d){
+
+	}
+};
+
+class Faculty{
+	int empid; string name, desig; float salary;...
+	void giveAssignmentToStudent(){
+		Student asif;
+		Document assign1;
+		asif.doAssignment(assign1);
+	}
+};
+
+
+========================================================================================
+
+struct Student{
+	string grades[50];
+	int credits[50];
+	int id; string name; float cgpa;
+};
+
+int main(){
+	Student asif;
+	cin>> asif.id >> asif.name;
+	
+	
+}
+
+
+========================================================================================
+struct/class: user defined type
+
+Object: class/struct variables (represent real world entities / application data)
+
+struct/class can have:
+	- member data (field)
+	- member function (method)
+
+Procedural programming:
+=======================
+	- Typically no method is added to the struct/class
+	- Objects are treated just like dead variables, where objects are manipulated 
+		(read/write from/to the fields) by 3rd party external functions 
+		(it can be main(), it also it can be method of another class)
+	- typically objects are sent from one function to another as a ping-pong ball (as parameter)
+
+	Ex-1:
+	=====
+	struct Node{
+		int val;	//field-1
+		Node *next;	//field-2
+	};
+
+	void addNodeToTheList(Node* nodePtr){
+		Node * temp = nodePtr;
+		while(temp->next != NULL){
+			temp = temp->next;
+		}
+		temp->next = new Node;
+		temp =temp->next;
+		cin>>temp->val;
+		temp->next=NULL;
+	}
+
+	int main(){
+		Node* headNode;		//pointer to object
+		Node n1, n2;		//object
+		int x;
+		cin>>n1.val;	n1.next=NULL;	//object n1 is manipulated by 3rd party "main"
+		headNode = & n1;
+		addNodeToTheList(headNode);
+		return;
+	}
+
+	Ex-2:
+	=====
+	struct Student{
+		string courseIds[50];
+		string grades[50];
+		int credits[50];
+		int id; string name; float cgpa;
+	};
+
+
+	float getCgpaOfStudent(Student& s){
+		s.cgpa = code to calculate cgpa from those 3 arrays
+		return s.cgpa;
+	}
+
+
+	int main(){
+
+		Student asif;
+
+		int n, i;
+		cout<<"Enter id: "; cin>>asif.id;
+		cout<<"Enter name: "; cin>>asif.name;
+		cout<<"How many courses completed? "; cin>>n;
+		for(i=0;i<n;i++){
+			cout<<"Enter course id of "<<i+1<<"-th completed course:"; cin>>asif.courseIds[i];
+			cout<<"Enter grade earned for "<<asif.courseIds[i]<<" course:"; cin>>asif.grades[i];
+			cout<<"Enter # of credits for "<<asif.courseIds[i]<<" course:"; cin>>asif.credits[i];
+		}
+
+		cout<<"cgpa of asif = "<< getCgpaOfStudent(asif) <<endl;
+
+		return;
+	}
+
+
+Object Oriented Programming:
+============================
+	- There will be methods in the struct/class to represent functionalities associated with objects
+	- Objects are empowered to do their own task without depending on external functions/methods 
+	- typically objects are requested by external bodies to do something by calling their methods
+
+	Ex-1:
+	=====
+
+	Ex-2:
+	=====
+	struct Student{
+		string courseIds[50];
+		string grades[50];
+		int credits[50];
+		int id; string name; float cgpa;
+
+		void setStudInfo(){
+			int n, i;
+			cout<<"Enter id: "; cin>>id;
+			cout<<"Enter name: "; cin>>name;
+			cout<<"How many courses completed? "; cin>>n;
+			for(i=0;i<n;i++){
+				cout<<"Enter course id of "<<i+1<<"-th completed course:"; cin>>courseIds[i];
+				cout<<"Enter grade earned for "<<courseIds[i]<<" course:"; cin>>grades[i];
+				cout<<"Enter # of credits for "<<courseIds[i]<<" course:"; cin>>credits[i];
+			}
+		}
+
+		float getCgpa(){
+			cgpa = code to calculate cgpa from those 3 arrays
+			return cgpa;
+		}
+
+	};
+
+	void doSome(){...}
+
+	int main(){
+		doSome();
+		Student asif;
+		asif.setStudInfo();	//1st call, asif is the client
+		cout<<"cgpa of asif = "<< asif.getCgpa() <<endl;
+
+		Student shafiq;
+		shafiq.setStudInfo();	//2nd call, shafiq is the client
+		return;
+	}
+
+	Some points to remember while calling a method of a struct/class:
+	=================================================================
+		- A function/method needs to be called to get executed, and therefore a function/method must have a caller
+			(except few exception like main, constructors, etc.)
+		- A caller of a function/method ALSO is another function/method
+		//- A caller of a function/method is another function/method itself, then recursion happens
+
+		- in above example, main() is the caller of getCgpa(); and asif is the client of that particular call
+
+=========================================
+See "2022-01-24.cpp"
+
+=======================================
+Conditional operator / ternary operator
+
+cond?trueVal:falseVal
+
+=======================================================================================================
+=======================================================================================================
+
+Revisiting function:
+===================
+function prototype:
+	- float doAnother(float, float);
+
+function definition: 
+	- actual body of the function accompanied by a block "{...}"
+	- Ex: void doSome(int x, float y){//code...}
+
+function call: 
+	- ends with semicolon (typical), its a statement written inside the caller function
+	- ex:
+		float doAnother(float x, float y){
+			//...
+		}
+		void callerFunction(){
+			...
+			doSome(10, 3.5);	//call
+
+			float x = sqrt(10);
+			x = sqrt(10) + pow(2,3);
+			cout<< doAnother(10,20);
+			doSome(10, doAnother(10,20));	//call						
+		}
+	
+
+
+actual parameter:
+	- the parameter used in function call
+
+formal parameter:
+	- the parameter name used in function definition
+
+How parameter is passed to a function:
+--------------------------------------
+	- pass-by-value
+	   : both actual & formal parameter has their own memory
+	   : the value of actual parameter will be copied to the memory of formal parameter
+	   : As a result if a change is made in formal parameter, there will be no affect on actual parameter
+	   : we use pass-by-value to give read-only access of actual parameter to a called function
+
+	- pass-by-reference
+	   : formal parameter is a reference of actual parameter, where formal parameter does not occupy
+		any additional memory
+	   : formal paramer is an alias (ওরফে) of actual parameter
+
+	- pass-by-address
+	   : formal parameter is a pointer which stores the address of actual parameter.
+	   : As a pointer formal parameter itself need memory to store the address of actual parameter
+	   : Caller send address of actual parameter while calling the function
+
+
+
+
+How we return from a function:
+--------------------------------------
+	- return-by-value
+	- return-by-reference
+--------------------------------------

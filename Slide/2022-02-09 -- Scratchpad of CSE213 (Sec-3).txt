@@ -1,0 +1,122 @@
+2022-02-09 -- Scratchpad of CSE213 (Sec-3)
+==========================================
+
+Q: Did you use an object of a pre-existing class as a field of a new class ?
+A:
+class Employee{
+	string name, address;	//string is a class
+};
+
+class Node{
+	int weight;
+	Node *left, *right;
+	public:
+	//methods
+	public setNode(){
+		cin>>weight;
+		left=right=NULL;
+	}
+	public setNode(int w){
+		weight=w;
+		left=right=NULL;
+	}
+
+};
+
+class BinaryTree{
+	Node root;
+	public:
+	public setRoot(int w){
+		root.setNode(w);
+	}
+};
+
+class Address{
+	//fields: houseNo, roadNo, street, thana, district, zipCode,
+	public:
+	Address(){....}
+	Address(.,.,.,.,.,.){....}
+};
+class Employee{
+	public:
+
+	Employee(){
+		0
+		"TBA"	
+	}
+
+	Employee(int id, string str1, string str2 ){
+		employeeID=id; name=str1; department=str2;
+		empAddress.setAddress();
+	}
+
+	//istream& ooperator>>(istream& in){...}
+	//we could do this, if we are ready to write the statement as: "e1>>cin;"
+	
+};
+
+class istream{
+	//fields
+	public:
+	
+	//istream& operator>>(Employee& e){....}
+	//Unfortunately, we can't add/modify libratu class
+};
+
+isteream& operator>>(istream& myIn, Employee& e){...}
+
+int main(){
+	int x,y,z;
+	cin>>x>>y>>z;
+	Employee rana, rifat(x,y,z);
+
+	cin >> e1;	
+	//first operand: cin (istream object)	
+	//second operand: e1 (Employee object)	
+	//first operand is always the client for operator-method
+
+	//Java: Employee nakib, shafiq=null;
+	//nakib = new Employee(x,y,z);
+	//shafiq = new Employee();
+	//shafiq.setEmployee();
+
+	rifat.setInfo();
+	Node n;	
+	n.setNode();
+	
+	BinaryTree myTree;
+	myTree.setRoot(12);		//if we use class
+
+	
+	name.length();
+
+-----------------------------------------------------------------
+Q: what happens inside >> method when we write: int x; cin>>x;
+
+class istream{
+	//fields
+	public:
+	
+	istream& operator>>(int& val){
+		KB input will accumulated in the buffer of client (istream class field)
+		now, those input stream will be parsed and converted to desired bytes
+		thereafter only the parsed bytes will be stored in memory of val
+	}
+};
+
+cin>>x>>y;		//input: 123 space/enter 456
+
+=====================================================
+Q:How to computer understanding the code?
+
+every key on a KB is a character
+input: '1' '2' '3'
+'1' Ascii code: 49	00110001
+'2' Ascii code: 50	00110010
+'3' Ascii code: 51	00110011
+
+'A' Ascii code: 65
+'a' Ascii code: 97
+
+Actual input: 		00110001 00110010 00110011
+Perceived input:	00000000 00000000 00000000 01111011 (expected value to be stored in memory of val)

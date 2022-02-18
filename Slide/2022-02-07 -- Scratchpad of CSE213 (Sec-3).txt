@@ -1,0 +1,205 @@
+2022-02-07 -- Scratchpad of CSE213 (Sec-3)
+==========================================
+
+=============================================================================================
+
+Introduction to Java:
+======================
+
+Java: 
+	Jave IDE
+		- Java Development Kit (JDK): JRE + Development Tools
+			- Java Runtime Environment (JRE): JVM + class libraries
+				- Java Virtual Machine (JVM)
+
+
+Platform:
+	- May differ in terms of architecture (hardware)
+	- May differ in terms of OS
+	- May differ in terms of hardware 7 OS
+
+Platform dependent software: 
+----------------------------
+	- Machinecode generated for one platform does not work in a different platform.
+	Example: 0000 0001 (01)	0010 0011 (23) 0100 0101 (45)  0110 0111 (67) in Hex
+		00000001 	00100011 	01000101 	01100111
+		byte#:100	101		102		102		[big endian]
+		byte#:103	102		101		100		[big endian]
+	one such example is big vs little endian
+
+	Ex: C++ (a cmpiled C++ object file or exe file generated in windows will not work in linux/ios
+
+	test.cpp	--compiler--> 		object file (test.o/obj): 
+						(machine-code equivalent of your source-code)
+
+	object file	--linker/builder-->	test.exe file (your machine code will be linked with
+							  machine-code of used library classes/function)
+
+	--------test.cpp----------
+		class A{
+			...
+			void doSomeInA(){...}
+		};
+		class B{
+			...
+			void doSmeInB(){
+				A obj;
+				obj.doSomeInA();
+			}
+		};
+		class C{...};
+		int main(){...}
+	--------------------------
+	test.cpp	--compiler--> 		test.o/obj
+	test.o/obj	--builder/linker--> 	test.exe
+
+Platform independent software: 
+------------------------------
+	- Machinecode generated for one platform works in other platforms, too.
+	- compile once (machine-code is portable), execute anywhere
+
+	Ex: Java is platform independent
+
+	test.java   --compiler(javac.exe)-->	byte-code (Java's universal machine-code format)
+						file name: test.class (.class is the extension of bytecode)
+
+	--------test.java---------	//invalid
+	----------A.java----------	//valid
+		public class A{		//public class
+			...
+			public static void main(....){....}
+		}
+		class B{...}		//package class
+		class C{...}		//package class
+	--------------------------
+	Note: 
+		- There is no global variables/functions in Java. 
+		- Therefore every executable statements are part of some class. 
+		- Therefore, a java project can be viewed as collection of classes. 
+		- As a result, if your source code (test.java) has 3 classes, compiler will produce
+			3 independent machine-code files for each of those classes
+		- In Java, "main()" is not a global function, "main()" is a method of some class
+		
+		- in abobe example, since class A contains main method, it is called the main-class. To be
+			the main-class, class A MUST be (typical case) a public class.
+		- Finally, the file name MUST be public class name
+		- A java file can't have more than one public class
+
+	test.java	--compiler--> 		A.class, B.class & C.class	//invalid
+	
+	A.java		--compiler--> 		A.class, B.class & C.class	//valid
+	c:\>CSE213\javac.exe A.java
+
+	c:\>CSE213\java.exe A	[java.exe is the interpreter which will interpret line by line & execute]
+
+
+Java Package:
+-------------
+	- 'package' is a scope in java. When you compile a project, multiple class files will be produced
+		by java compiler, if there are multiple classes written/defined in the project.
+	- package is a folder where we keep all relared classfiles (bytecodes), 
+		and the folder itself becomes a scope in Java
+	- If we don't explicitly specify private/protected/public with a field/method/class, 
+		then by default it is in package scope
+
+	Ex: packageName		Description
+	------------------------------------
+	mainpkg			mainpkg is a folder
+	cse213.mymath		cse213 is a folder and mymath is a sub-folder of cse213 [Polygon.class]
+	cse213.utilities	cse213 is a folder and utilities is a sub-folder of cse213 [Calculator.class]
+
+	Suppose you download a thirdparty library from itext.com for pdf generation
+	com.itext		com is afolder and itext is a sub-folder of com
+
+	iub.edu.bd
+	bd.edu.iub		bd is a folder, edu is a sub-folder of bd, iub is sub-folder of edu
+
+Netbeans:
+----------
+New Project:
+
+	Project Name:		JavaApplication28
+	Project Location:	C:\COURSES\2022 Spring\213\NetBeans Projects
+	Project Folder:		C:\COURSES\2022 Spring\213\NetBeans Projects\JavaApplication28
+	Create Main Class:	javaapplication28.JavaApplication28
+
+	Project Name:		2022-02-07--JavaBasic(sec-3)
+	Project Location:	C:\COURSES\2022 Spring\213\NetBeans Projects
+	Project Folder:		C:\COURSES\2022 Spring\213\NetBeans Projects\2022-02-07--JavaBasic(sec-3)
+
+	Create Main Class:	pkg2022.pkg02.pkg07.javabasic.sec.pkg3.JavaBasicSec3
+				-------------packageName--------------.--MainClassName---
+
+	Create Main Class:	mainpkg		.	MainClass
+				--packageName--	.	--MainClassName---
+
+
+====================================================================
+int x;	//we are giving a name to a 4-byte memory chunk, which is 'x'
+cout<<x;
+
+int *ptr = new int;
+
+
+Memory leakage: 
+---------------
+void doSome(){
+	int *ptr = new int[100];	//400 bytes will be allocated from heap
+	...
+	//if your function/program crash here, then these 400 bytes from 
+	//heap will not be released. There 400 bytes will be memory-leak.
+	//unless computer restarts, these 400 bytes are gone
+
+	delete ptr;	//explicitly releasing memory back to heap
+}	//heap will release these 400 bytes, if not yet released explicitly
+
+Q: "Student asif, shafiq(123, "Shafiq", 3.45);" From where memory of asif will be allocated?
+A:
+	- if asif is a global object, then from data-segment
+	- if asif is local, then from heap-segment
+
+Note:
+-----
+	- Java (JVM) has its own garbage collection mechanism, which reclaim 
+	unused/unreferenced class-instances from HEAP and releases the memory 
+	periodically to prevent memory leakage.
+
+	- Therefore, ALL java class-instances are allocated from HEAP
+
+	- C++:
+		Student asif;	
+		//memory is allocated from data/stack immediately as soon as the
+		//line is executed, and 'asif' becomes a class-instance and ready
+		//to be used as a client.
+		asif.setInfo();
+				
+	- Java:
+		Student asif;	
+		//since memory is allocated from HEAP, 'asif' is not yet an instance,
+		//becomes no memory is allocated yet. Heap memory MUST be allocated
+		//at runtime using 'new' operator. At this point, 'asif' is just a
+		//class-handle (an empty reference, yet to refer a memory after 		allocation), and not yet ready to be client.
+		asif.setInfo();	//invalid
+		asif = new Student();	//Now 'asif' becomes a class-instance
+		asif.setInfo();	//valid
+
+
+------------------------------
+int x, z=20;
+x = 12;
+int &y = x;
+
+Student *ptr = new Student;
+Student asif;
+Student &s = asif;
+
+====================================================================
+
+Constructor:
+------------
+	- constructs the instance (assign field value at the time of memory allocation)
+	- purpose is to prevent garbage in the field at any time
+	- The community is devided in two camp whether to consider 'constructor' as
+		a method or not. It has simillarities with method, but also invalidates
+		some of the concept associated with a method
+	- constructor name is the same name of the class

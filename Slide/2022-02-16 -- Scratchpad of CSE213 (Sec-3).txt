@@ -1,0 +1,254 @@
+2022-02-16 -- Scratchpad of CSE213 (Sec-3)
+==========================================
+
+C++ main vs Java main:
+======================
+
+C++:
+-----
+#include<iostream>
+
+void doSome(int val){...}
+
+int main(int argc, string argv[]){...}
+int main(int argc, char* argv[]){...}
+int main(int argc, char** argv){...}
+
+
+
+
+string 		<--- 	"Hello World"
+char carr[10];	<--- 	"Hello World"
+char* ptr;	<--- 	"Hello World"
+
+int main(){
+	cout<<"Hello world";
+	return 0;
+}
+
+Java:
+-----
+
+public class MainClass{
+	public static void main(String[] args) {
+		System.out.print("Hello  World");	
+	}
+}
+
+- global function vs public method of a public class
+- int vs void return type
+- no parameter vs array of String as parameter to main
+- non-static vs static method
+- cout vs System.out.print
+
+
+Differences:
+============
+ - C++ main is a global-function, java main is a public method of a public class
+   ------------------------------------------------------------------------------
+	- C++ is object-based (not strictly object-oriented)
+	- Java is purely Object Oriented
+	- for obvious reason, as there is nothing global in java
+
+ - java main is a public method
+   ----------------------------
+	- main method need to be callable to JVM which is outside of the project package
+	- the class containing main method & the main method itself need to be public
+
+ - C++ main returns int, java main returns void
+   --------------------------------------------
+	- It was allowed to return int/void/... in earlier version of C++
+	- C++ also could return void in earlier version, but in latest versions, 
+		its made mandatory to return int, 
+		as the returned int value can be used as a sucees/error code by the OS
+
+ - Java main has parameter (1D String array)
+   -----------------------------------------
+	- C++ main can also have parameter to send command-line argements/parameters to the main
+	Q: Who supply actual parameter for a to-be-called function?
+	A: caller-function
+
+ - java main is static: in Java a field as well as a method can be static
+   ----------------------------------------------------------------------
+	- non-static field: 
+		- instance-level field
+		- every instance will have its own memory for this field. Ex: id, name for Student class
+	- static field: 
+		- The field which has common value for ALL instances.
+		- therefore, we don't need to allocate memory for that field inside every instance
+		- instead a SINGLE piece of memory is allocated at "class-space" and every instance has
+			a reference of the single memory for that field
+		Ex:
+		public class Student{
+			non-static fields: id, name, address, cgpa, phoneNo, dept, ...
+
+			static fields: uniName, uniAddress ...	//VALID, changable
+		}
+
+		public class NidCard{
+			non-static fields: name, dob, fname, mname, bg, padd, cadd
+			static field: nationality	//VALID, NOT changable
+			private static final String nationality = "Bangladesh";
+		}
+
+		public class Course{
+			static field: courseId	//INVALID
+		}
+		public class Department{
+			static field: Course[] courses	//INVALID
+		}
+		Department cse, eee, ps, economics, bba
+	
+		public class Equation{
+			static + constant(final) field: speedOfLight	//VALID, NOT changable
+		}
+		Equation eq1, eq2, eq3
+
+		public class CPUModule{
+			static field: cpuTemperature;	//INVALID
+		}
+
+		CPU c1, c2;
+		
+		public class Team{
+			notice: non-static
+		}
+		-----------
+		public class TaxableEntity{
+			static field: maxCorporateTaxRate = 45;
+		}
+		TaxableEntity gp, uniLiver, marico, squarePharma;
+		
+	--------------------
+	- non-static method: 
+		- It is a method which can access non-static fields. Ex: setStudInfo()
+		- non-static method can ALSO access static fields. Ex: showStudInfo() can ALSO print uniName
+		- there MUST be an INSTANCE as the client for this non-static method call
+		- instance-client is mandaroty, because the method may use instance-specific non-static field
+
+	- static method:
+		- static method can access only static field 
+			(field memory belongs to class-space, not in instance-space)
+		- Therefore, instead of instance, we use CLASS-NAME as the client to call a static method
+		Ex:
+		public class Student{
+			non-static fields: id, name, address, cgpa, phoneNo, dept, ...
+			static fields: uniName ...
+			private static String uniName = "IUB"
+			
+			public int getId(){ return id; }
+			public static String getUniName(){ return uniName; }	// VALID
+			//call: Student.getUniName();
+
+			//public String getUniName(){ return uniName; }		// ALSO VALID
+			(a non-static method can also access a static field)
+			(a static method CAN'T access a non-static field)
+		}
+		public class SomeClass{
+			public void callerMethod(){
+				Sustem.out.print( Student.getUniName() );
+			}
+		}
+		
+		- a method need to be static, if the mathod wants to access a static field 
+			- NOT mandatory, therefore this is not the main motivation to make a method static
+
+		- a method 'doSome()' need to be static, if the caller does not have an instance available 
+			to use it as client to call doSome()
+
+		- java main is static because, as the caller, JVM don't has any instance of MainClass available.
+			Therefore JVM calls the main as "MainClass.main();"
+
+
+
+ - cout vs System.out.print
+   ------------------------
+	LeftHandSide			.		RightHandSide
+	--------------------------------------------------------------
+	instance(classHandleName)	.		non-static fieldName
+	instance(classHandleName)	.		non-static methodName()
+	ClassName			.		static fieldName
+	ClassName			.		static methodName()
+
+	ClassName begins with Capital letter (coding convention)
+	variable/handle/method name begins with small letter
+
+	C++:
+	----
+	cout<<x;
+	cout.operator<<(x);
+	- a method of ostream class is executed, where x is the pass-by-value parameter	
+	- client: cout, which is an ostream class instance
+
+	Java:
+	-----
+	System.out.print(x);
+	- a method of PrintStream class print() is executed, where x is the pass-by-value parameter	
+	- client: out, which is a PrintStream class instance
+
+	Q: then instead of calling "out.print(x)", 
+		why there is a 'dot' before out & we call it as "System.out.print(x);" ?
+	A: out is declared as a static field in System class, whose type is PrintStream.
+
+	Q: Ok, but can we declare our own PrintStream object and use it to call print() method?
+		(ex: PrintStream myOut = new printStream(); myOut.print(x);
+
+	A: YES and NO.
+		- before using any stream instance, the source of the stream (for a input stream class)
+			or the destination of the stream (for a output stream class) need to be finalized. 
+
+		- If the sourse/destination is defined for a stream instance, then we can use it, otherwise NOT
+
+		- In C++, this specific instance (cout & cin) are linked with screen and keyboard as their 
+			destination & source and the code for this linking is written in namespace called 'std'
+
+		- In Java, this specific instance (in & out, fields of System class) are linked with 
+			screen and keyboard as their destination & source and the code for this linking 
+			is written in the constructor of System class
+
+		- but if we want to declare our own PrintStream object and use it to call print() method,
+			then we have to open the stream with screen (link it with the destination devive)
+			before calling the print() method
+			ex: 
+				PrintStream myOut = new printStream(); 
+				//code to open myOut with screen
+				myOut.print(x);
+
+
+==============================================================================================
+
+C++:
+	cout<<asif;
+	ostream& operator<<(ostream&, Student);
+
+
+Java:
+	System.out.print(asif); //we want all the field values of asif to be printed
+
+public class PrintStream{
+
+	public void print(int val){...}
+	public void print(String val){...}
+	public void print(Student val){...}
+}
+
+==============================================================================================
+
+Goal: 
+	- Must be specific
+	- there should not be any hidden interpretation, which need to be orally explained
+	- System designer / UI designer / programmer shoule be able to completely understand the task to be
+		performed by reading the goal.
+	- Don't be miser with words. Elaborate your goal
+	- Describe a specific report as a filler goal, if you can't identify 5 goals for a user
+
+
+Workflow:
+	- Make sure, if there is any user input part of the workflow, then specify the inputs, otherwise
+		how UI designer can design the UI, and system designer can finalize the fields?
+	- Make sure, that if there invloved any varification/validation need to be performed as part
+		of the SOP for that task in that organization, those varification/validation steps are mentioned.
+		Ohtersiwe how programmer can implement them in later stage
+	- Make sure if there is any output as the effect of the goal to be replected on your screen, 
+		then specify the output elements, otherwise, how how UI designer can design the UI
+		to reflect the expected output

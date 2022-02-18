@@ -1,0 +1,314 @@
+2022-02-13 -- Scratchpad of CSE213 (Sec-2)
+==========================================
+
+Pointer arithmetic:
+===================
+int x=10;
+cout << x;	//10
+cout << x+1;	//11
+
+int*ptr = &x;	//let's assume the address of x starts at byte# 100
+cout << ptr;	//100
+cout <<(*ptr);	//10
+cout << ptr+1;	//address of 1-element after	104
+
+char *charPtr = new char;		//let's assume the address store in charPtr is byte# 954
+int *intPtr = new int;			//let's assume the address store in intPtr is byte# 955 [955 to 958]
+double *doublePtr = new double;		//let's assume the address store in doublePtr is byte# 959 [959 to 966]
+
+Q: How many bytes charPtr will occupy?
+A: 8 bytes for 64-bit system
+
+Q: How many bytes intPtr will occupy?
+A: 8 bytes for 64-bit system
+
+Q: How many bytes doublePtr will occupy?
+A: 8 bytes for 64-bit system
+
+
+C++ Array:
+==========
+- C++ array is just a collection of some homogeneous elements of some type (primitive/class).
+- Memory is allocated as soon as the declarative statement is executed (from data/stack segment)
+- C++ array itself is not a class instance, rather the array name is a reference of the base address of the array
+- array name gives you the base/starting of the chunk of memory allocated to the array
+	: "ONLY NAME" can be used as pointer in the sense that pointer arithmetic can be applied to array name
+
+- int arr[10];	//lets assume, bytes 200 to 239 is allocated for arr
+
+- When we use arr[i], we get the element from the conteneous memory
+	arr 	--> will get base address/starting address of the conteneous memory given to array arr
+	cout<< arr; 	//200
+	cout<< arr+1;	//204
+	cout<<*(arr+0);	//1st value of the array stoted in memory 200-203, refered as arr[0]
+
+	cout<<*(arr+1);	//2nd value of the array stoted in memory 204-207, refered as arr[1]
+- C++ array use pointer arithmetic
+- If we send a C++ array to a function as parameter, 
+	: we send the array name ALONE as the 1st parameter (base address)
+	: we also need to send the size of the array as second parameter to run the loop
+
+Q: If we send a string as a function parameter, then why we don't need to send the size?
+A: string is a class, which has a field to represent the size/length of the text. It has
+	a dynamic memory (another field) to store the characters of the text
+	string str1 = "Hello World";
+	str1.length(); or str1.size();
+	string str2 = str1;
+	//arr1 = arr2	
+
+- Boundary checking is not enforced in C++ array
+
+
+Java Array:
+===========
+- Java Array are class instance. They are instance of implicit Array-class.
+
+	- If we declare an 1D int array, then 'int[]' is an implicit array class
+		: int arr[] = {1,2,3,4,5};
+		: arr is a class-instance of implicit array-class called "int[]"
+
+	- If we define a class called 'ComplexNo', then 'ComplexNo[]' is an implicit class
+		: public class ComplexNo{....}
+		: public class Student{....}
+		: public class MainClass{
+			public static void main(String[] args){
+
+				int		intarr[10];				//C++
+				int		*ptr = new int[10];			//C++
+				int[]		intarr;
+						intArr		= new int[10];		//Java
+
+				//ComplexNo complexArr[10];	//C++
+				Student 	asif 		= new Student();	//instance
+				//int[]		intArr		= new int[](10);
+				int[]		intArr		= new int[10];		//Java
+
+				//className[]	complexArr	= new className[](10);	//instance
+				ComplexNo[]	complexArr	= new ComplexNo[10];	//instance
+			}
+
+		  }
+
+- We can't define such impicit array class
+
+- These implicit array-class has a public field called 'length' which indicates how many elements are there
+
+- If we send a Java array to a method as parameter, 
+	: we send array-class-instance (array name ALONE) as the only parameter
+	: we DON'T need to send the size as second parameter as it can be found from the field 'length'
+
+- For each class we define as a new type, there exist an implicit Array-class for that type, 
+	if we declare an array of that new type
+
+- Boundary checking is ENFORCED in Java
+
+int[] intArr;	//int[] intArr = new int[10];
+...
+intArr = new int[10];
+ 
+
+//implicit-array-class
+public class int[] {
+	public int length;
+	//dynamic memory to store the array elements
+}
+
+complexNo complexArr = new ComplexNo[10];
+
+//implicit-array-class
+public class ComplexNo[] {
+	public int length;
+	//dynamic memory to store the array elements
+}
+
+
+Declaration in C++ vs Java:
+---------------------------
+
+int arr[10];	//C++, size mandatory, if initializer list is not provided
+//int arr[10];	//Error in Java, since memory must come from heap using 'new'
+
+int arr[];	//It might work (depends on java compiler), not recommended
+int[] arr;	//Recmmended format in Java
+
+
+See 1-D java code
+----------------------------------------------------------------------
+
+C++:
+----
+int matrix[3][4];
+
+Q: what is the array name? 
+A: matrix;
+
+Q: How many elements are there in matrix?
+A: 
+	: 12 //WRONG
+	: 3 //CORRECT
+
+	- elemnets of an one-D array is the primitives/objects /data
+		: In a 1D array of integers, the elements are integers
+		: In a 1D array of ComplexNo, the elements are ComplexNo instances
+
+	- elemnets of a two-D array is no of oneD arrays in that two-D
+
+Q: How many elements are there in matrix[1]?
+A: 4
+
+int matrix[3][4];
+
+Java:
+-------
+int[] arr;
+arr = new 	typeOfElements	[noOfElements];
+arr = new 	int		[10];
+
+
+public int[][] {
+	public int length;	//no of elements
+	//internal memory to store the elements
+}
+
+public int[] {
+	public int length;	//no of elements
+	//internal memory to store the elements
+}
+
+int[][] martix;
+
+int **ptr;
+ptr = new int*[3];
+loop: ptr[i] = new int[4];
+
+matrix = new 	typeOfElements	[noOfElements];
+//matrix = new 	int[]		[3];
+matrix = new 	int		[3]			[];
+
+
+
+matrix = new typeOfElements[noOfElements];
+matrix = new int[3][];
+
+for(i=0;i<matrix.length;i++)
+	martix[i] = new int[4];
+
+----------------------------------------------------------------
+Q: How many elements in a rubik's cube?	[[3D]]
+A: 6 [as there are 6 sides, each side is a 2D]
+
+//int rubiksCube[6][3][3];	//C++
+
+int[][][] rubiksCube;
+rubiksCube = new int[6][][];
+for(i=0;i<rubiksCube.length;i++){
+	rubiksCube[i] = new int[3][];
+	for(j=0;j<rubiksCube[i].length;j++){
+		rubiksCube[i][j] = new int[3];
+		for(k=0;k<rubiksCube[i][j].length; k++){
+			rubiksCube[i][j][k] = randomvalue/user input...;
+		}
+	}
+}
+
+
+
+
+
+
+Q: How many elements in a rubiksCube[0] / rubiksCube[1] /rubiksCube[5]?		[[2D]]
+A: 3 [as there are 3 rows/iD in a 2D]
+
+Q: How many elements in a rubiksCube[0][1]?	[[1D]]
+A: 3 [as there are 3 colorCells in a row/1D]
+
+
+Java:
+-----
+public int[][][] {
+
+}
+
+int[][][] rubiksCude;
+
+
+============================================================================================
+
+C++ main vs Java main:
+======================
+
+C++:
+-----
+#include<iostream>
+
+void doSome(int val){...}
+
+int main(string argv[], int argc){
+	cout<<"Hello world";
+	doSome(x);
+}
+
+Java:
+-----
+
+public class SomeClass{
+	public static void main(String[] args) {
+		System.out.print("Hello  World");	
+	}
+}
+
+Differences:
+------------
+ - C++ main is a global-function, java main is a method
+ - Java main has parameter (1D String array)
+ - ...
+ - .....
+
+=====================================================================
+Exercise-7
+
+C++
+class MyOneDArray{
+	int size;
+	int *ptr;
+
+	public:
+
+	MyOneDArray(){ size = 0; ptr=NULL; }
+
+	MyOneDArray(int sz){
+		size = sz;
+		ptr = new int[size];
+		loop: 
+			cin>>ptr[i];
+			ptr[i] = rand();
+	
+	}
+
+	
+
+}
+
+class SomeClass{
+
+	int arr[10];
+
+	int operator[](int index){
+		return ptr[index];
+	}
+};
+
+int main(){
+
+	int arr[10];
+	cout<<arr[5];
+
+	MyOneDArray obj(10);
+	cout<<obj[5];
+
+	Someclass obj;
+	//you want to print obj.arr[5];
+	cout<<obj[5];	//can you write this?
+	//yes, we can, if [] operator is overloaded
+	return 0;
+}

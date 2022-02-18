@@ -1,0 +1,336 @@
+2022-02-01 -- Scratchpad of CSE213 (Sec-3)
+==========================================
+
+OOP using 'class' instead of 'struct'
+=====================================
+
+- Scope of an independent variable in C++: local / global
+
+	int x;	//scope of x can be local or global, depending on where it is declared
+
+	Local: 	Q: local to whom? 
+		A: local to a block. A block is an enclosure of '{' & '}'.
+		   	- A block can be a function/method definition		
+			- A block can be associated with a loop
+			- A block can be associated with if/else/else-if
+			- A block can be associated with switch-case
+			- A block can also be a "bare-block"
+
+	Global: can be accessed from anywhere of the program
+
+-----------------------------------------------------------------
+- Scope for a struct/class member:
+
+	Scope		C++	Java	Scrictness
+	--------------------------------------------
+	- private	yes	yes	1 Most
+	- protected	yes	yes	2	[to understand protected, need to know inheritance]
+	- package	NO	yes	3	[Only for Java]
+	- public	yes	yes	4 Least
+
+
+public: accessible/callble (field/method) from outside of the struct/class
+-------
+
+private: accessible/callable (field/method) STRICTLY from INDISE of the struct/class ONLY
+--------
+
+*) a private method can only be called by other methods of the same struct/class
+
+ - Scope of fields/methods: 'struct' vs 'class'
+
+Example of private method:
+-------------------------
+
+   struct Student{
+	//fields...
+
+	void submitAssignment(Document a1){
+		//a1.method callls
+		couductSurvey(...);		
+		//code to solve given assignment and upload to classroom
+	}
+
+	void submitInternshipReport(Document a1){
+		//a1.method callls
+		couductSurvey(...);
+		//code to solve given assignment and upload to classroom
+	}
+
+	private:
+	void conductSurvey(string s){......}
+
+   };
+
+   class Document{.....};
+
+   class Faculty{
+	//fields....
+	public:
+	void giveAssignmentToStudent(){
+		Student asif;
+		Document assign1;	assign1.setAssignment();
+		asif.submitAssignment(assign1);
+	}
+   };
+
+==========================================================================
+
+
+Scope rules for 'struct':
+-------------------------
+  - by default, every member (fields/methods) is public. 
+	- Any outsider can read/write a field	[undesirable for OOP]
+	- Any outsider can call a method	[desirable]
+	int main(){
+		ComplexNo c1;
+		c1.setComplexNo(); //as an outsider main can call a method
+		cin>>c1.real>>c1.img; //as an outsider main can also set the fields
+		return 0;
+	}
+	- even though we add methods to the struct to enable object orientation,
+	  as an author of the struct, we can't enforce it as long as the fields are public.
+	  It's totally upto the wish of the outsider whether to call the method or access
+	  the public fields directly.
+	- therefore, if struct author wants to enforce object orientation for its objects,
+	  the fields must be declared as private and keep the methods as public, so that the 
+	  fields are no longer directly accessible to the outsider, but the methods are still
+	  available to the outsider so that they can call those methods. In this way, author 
+ 	  can enforce the outsider to call the methods to manipulate the fields.
+
+
+Scope rules for 'class':
+-------------------------
+  - by default, every member (fields/methods) is private. 
+	- NO outsider can read/write a field	[desirable]
+	- NO outsider can call a method		[not desirable]
+	int main(){
+		ComplexNo c1;	//if ComplexNo is a 'class' (instead of 'struct')
+		c1.setComplexNo(); //Error, method is not callable by outsider
+		cin>>c1.real>>c1.img; //Error, fields are not assessible to outsider
+		return 0;
+	}
+	- therefore, to enforce object orientation, we will keep the fields private, but will 	  
+	  make the methods public. In this way, author can enforce the outsider to call 
+	  the methods to manipulate the fields.
+	
+<<see cpp for more explanation>>
+
+
+==========================================================================
+Q: Did you use any library class in your previous course?
+
+A:
+	squt, pow:	these are global functions, not methods of a class
+
+	string	is a class & it has its own methods
+	string str = "Hello world";
+	cout<<"no of characters="<<str.length();
+
+Q: explain the following statement:
+	cout<<x;
+A: 
+	what is cout 	??	:	cout is an object of ostream class
+	what is << 	??	:	a special method called "operator<<" is called
+	what is x 	??	:	x is the parameter of the method
+
+	cout<<x;	cout.operaotr<<(x);
+	cout<<y;	cout.operaotr<<(y);
+
+	cout<<x<<y;	cout.operaotr<<(x).operator<<(y);
+
+
+
+=========================================================================
+Q: What is function / method overloading?
+A:
+	- If We have multiple definitions with same function/method name, we call it
+		function/method overloading.
+
+	- function/method overloading is possible if and only if parameter-list of ALL
+		the definitions are unique.
+
+	void doSome(){//code-1}	//error
+	void doSome(){//code-2}	//error
+
+	void sort(int arr[], int size){//code to sort an int array}	//OK
+	void sort(float arr[], int size){//code to sort a float array}	//OK
+
+	int main(){
+		int arr1[]={11,22,33,44,55};
+		float arr2[]={1.1,2.2,3.3,4.4,5.5};
+		sort(arr1,5);
+		sort(arr2,5);
+		doSome();
+	
+Q: What is operator overloading?
+A:
+	- every operator has a finite set of operand types on which the compiler already knows
+		how to do the operation. For example, for '+' operator, prabable operands can be:
+		int + int
+		float + float
+		double + double
+		int + double
+		short + float
+		....
+		
+	- But, if We want to use an operator on our object, then compiler is unware of how to 
+		interpret the object as an operand and perform the operation. For example
+		?? = ComplexNo + ComplexNo
+		To make this '+' operator work on ComplexNo, we need to overload the 
+		operator '+' for ComplexNo, by adding a special method to ComplexNo class
+		called operator-method. Operator-method starts with keyword 'operator' followed
+		by the operator-symbol. for example: 'operator+' or 'operator!=' 
+
+		ComplexNo = ComplexNo + ComplexNo
+		Marix = Matrix + Matrix
+		Student = Student + Student
+-------------------------------------------
+
+Q: Explain each components of the following statement: 
+	int x;
+	cout<<x;
+
+	cin>>x;
+
+	what is cout 	?	:	cout is an object (implicit) of ostream class which is 
+					declared and configured in namespace called 'std'
+
+
+	what is << 	?	:	left-Shift operator is overloaded to do something else.
+					In this context it is called extraction operator
+					<< operator is nothing but indicates the direction of the
+					data stream [from memory of x to internal field of cout].
+					<< indicates the operator method called "operator<<"
+
+	what is x 	?	:	x is the parameter of the operator method
+
+
+	cout<<x;		cout.operator<<(x);
+	cout<<x<<y<<z;		cout.operator<<(x).operator<<(y).operator<<(z);
+
+	c1+c2;
+
+	ostream myOut;
+	//code to connect myOut with a output destination (screen/printer/...)
+	myOut<<"Hello world";
+
+	
+	left-shift operator:
+	int x = 7893, y;	//binary: 	00000000 00000000 00011110 11010101
+	y = x<<2;		//		000000 00000000 00011110 1101010100
+	cout<<"y="<<y;		//31,572
+
+
+Q: Did you used any operator overloading in CSC101?
+
+A:	Yes
+
+Q: Did you used method chaining in CSC101?
+
+A:	Yes
+
+
+
+A: Yes, we used operaor methods from ostream & istream classes
+
+
+class ostream{
+	//....
+	void operator<<(int val){...}
+	ostream& operator<<(int val){...}
+
+};
+
+int x=10, y;
+cout<<x;		cout.operator<<(x);
+cout<<x<<y<<z;		cout.operator<<(x).operator<<(y).operator<<(z);
+
+
+int x=10, y;
+cout<<x;	cout.operator<<(x);
+cout<<y;	cout.operator<<(y);
+cout<<x<<y;	cout.operator<<(x).operator<<(y);
+
+
+class istream{
+	//....
+	istream& operator>>(int& val){...}
+
+};
+
+int y;
+cin>>y;
+
+================================================================================================
+
+How to start your milesttone-1:
+-------------------------------
+
+a) You need to find/identify 5 types of user for your app. Please beware of excluding a vital usertype
+b) Now find/identify 5 goals/objectives/task for each of those users
+	5*5 = total 25 goals
+
+c) Know the workflow of performing/acheiving the goal/task from the client and write it down.
+
+user: Student
+Goal-1: Registering courses for upcoming semester
+   Workflow:
+====================== Sample CRA Report ========================	
+
+Topic: ......iras...........
+
+User-1: Student
+----------------
+  Goal-1: Registering courses for upcoming semester
+	Workflow: 1/2 page description of bulleted chronological events
+	---------
+
+  Goal-2:
+	Workflow:
+	---------
+
+  Goal-3:
+	Workflow:
+	---------
+
+  Goal-4:
+	Workflow:
+	---------
+
+  Goal-5:
+
+
+User-2: Faculty
+----------------
+  Goal-1: ...
+  Goal-2: ...
+  Goal-3: Submit Grade for course taken
+  Goal-4: ...
+  Goal-5: ...
+
+
+User-3: AdmissionOfficer
+-------------------------
+  Goal-1: ...
+  Goal-2: ...
+  Goal-3: ...
+  Goal-4: ...
+  Goal-5: ...
+
+User-4: RegistrationOfficer
+---------------------------
+  Goal-1: ...
+  Goal-2: ...
+  Goal-3: ...
+  Goal-4: ...
+  Goal-5: ...
+
+
+User-5: AccountsOfficer
+-----------------------
+  Goal-1: ...
+  Goal-2: ...
+  Goal-3: ...
+  Goal-4: ...
+  Goal-5: ...

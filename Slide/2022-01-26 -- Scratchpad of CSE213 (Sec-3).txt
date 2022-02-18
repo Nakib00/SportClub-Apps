@@ -1,0 +1,154 @@
+2022-01-26 -- Scratchpad of CSE213 (Sec-3)
+==========================================
+
+How we return from a function:
+--------------------------------------
+	- returning void
+	   : returns the control back to the caller function so that the caller function can continue
+
+	- return-by-value (non-void)
+	   : a variable or a literal can be returned
+	   : the value of the returned variable/literal is given back to caller with control
+		int getSome(){
+			int x;
+			x = //some code to calculate x
+			return x;
+		}
+
+		int main(){
+			//z = getSome();
+			cout<< getSome();
+			return 0;
+		}
+
+
+	- return-by-reference (non-void)
+	   : We can return something from called function which has an address
+	   : the reference will be given back to the caller with control
+
+		int  w;		//global, lifetime: till the program terminates
+		int& getSome(){
+			int x;
+			x = //some code to calculate x
+			w = //some code to calculate w
+			p = //some code to calculate p
+			return x;
+			//retuwn w;
+			//return p;
+		}
+
+		/*
+		int& getSome2(int q){
+			//lifetime of q is also local to getSome2, problem to return as reference
+			q = //some code to calculate q
+			return q;
+		}
+		*/
+
+		int& getSome2(int& q){
+			//q is an alias of p, no problem to return as reference back to main
+			q = //some code to calculate q
+			return q;
+		}
+
+
+		//there is another context of return-by-reference, which we will discuss while
+		//talking about method chaining.
+
+		int main(){
+		
+			int p=20;			
+			
+			string str = "HW";
+			cout<<"Hello World";
+			cout<<str;
+
+			//cout<< getSome();	
+
+			//x is local to getSome(). Lifetime: as soon as getSome terminates
+			//theoritacally, it will be a null reference & will create problem If x is returned
+			//but it will be ok if w is retuened, as w is global and still its memory is valid			
+		
+			int a = getSome();	//a is an independent int. value of w will be read from
+						//the memory of w and will be stored in a. Therefore, if you 
+						//modify a, it will not affect w.
+
+			int& b = getSome();	//b is a reference of w will. Therefore, if you 
+						//modify b, effectively you are modifying w.
+
+
+			However, now-a-days the compilers ate highly optimized. 
+
+			cout<< getSome2(p);	
+			//memory of p still can be referered as its local to main, no problem
+
+			return 0;
+		}
+		
+===================================================================================================
+
+Method Chaining:
+================
+
+'this' pointer:
+---------------
+'this' is an implicit pointer which you can't declare. Whenever you define a struct/class, 
+an implicit pointer called 'this' is automatically bacomes available to the programmer
+to get the address of the client at that moment.
+
+	- unlike regular pointer we can't assign any address to 'this' pointer
+		int *ptr;		//point to nothing
+		ptr = new int[n];	//ptr points to the starting address of dunamically allocated memory
+		int x = 10; 		//assume address of x is byte no 100 to 103
+		ptr = &x;		//now ptr will store the address of x
+		Person *this;		//ERROR, can't declare 'this' --> implicitly available
+		this = &baby		//ERROR
+		this = new Person;	//ERROR
+
+	- 'this' pointer will always contain the address of the client DURING the LIFETIME of a method call
+		execution
+
+
+struct Person{
+	//fields...
+
+	//void buyFood(){cout<<"Food is bought."<<endl;}
+	Person buyFood(){
+		cout<<"Food is bought."<<endl;
+		//need to return whoever is the client of the method call
+		return *this;
+	}
+
+	Person arrangeLivingRoom(){
+		cout<<"Living room is arranged."<<endl;
+		return *this;
+	}
+
+	Person greetGuest(){
+		cout<<"Guests are greeted."<<endl;
+		return *this;
+	}
+
+	void serveFood(){
+		cout<<"Food is served."<<endl;
+	}
+};
+
+int main(){
+	Person babu, shafiq;
+
+	/*
+	babu.buyFood();			//during executuin, 'this' will point to babu
+	//...				//at this point 'this' will be NULL
+	babu.arrangeLivingRoom();	//during executuin, 'this' will point to babu
+	babu.greetGuest();		//during executuin, 'this' will point to babu
+	babu.serveFood();		//during executuin, 'this' will point to babu
+
+	shafiq.buyFood();		//during executuin, 'this' will point to shafiq
+	*/
+
+	babu.buyFood().arrangeLivingRoom().greetGuest().serveFood(); //error
+		//void.arrangeLivingRoom().greetGuest().serveFood();
+	return 0;
+
+}
