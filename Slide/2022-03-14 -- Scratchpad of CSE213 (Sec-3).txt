@@ -1,0 +1,515 @@
+2022-03-14 -- Scratchpad of CSE213 (Sec-3)
+==========================================
+
+
+UML Class Diagram:
+==================	
+
+Class/Interface:	
+	- Represented by a box
+	- Has 3 compartments:
+		- Top compartment will have Class/Interface name
+		- Middle compartment will have fields
+		- Bottom compartment will have methods
+
+Access specifiers:
+-----------------
+private		-
+protected	#
+package		~ (tilde)
+public		+
+
+Modifiers:
+----------
+Static: underline			Ex: memberCount
+					    ___________
+
+Read only (final)  	{readOnly}	Ex: dateOfJoining
+unique			{unique}	Ex: email, ID, etc
+collection []
+visitors String[*/3]	{unique}			
+
+-------------------------------------------------------------------
+Inheritance:
+------------
+Solid arrow from subclass to superclass (arrow is indicated with unfilled triangle)
+Dashed arrow from implementing class to interface (arrow is indicated with unfilled triangle)
+
+-------------------------------------------------------------------
+
+Abstract class	name		:	italic
+Abstract method	name		:	italic
+
+Non-abstract (concrete) class	:	normal font
+Non-abstract (concrete) method	:	normal font
+
+Interface: 	<<Interface>>
+		interfaceName
+
+-------------------------------------------------------------------
+
+Composition/Aggregation:
+------------------------
+
+class Booking{
+	Member m;	//aggregation
+	Payment p;	//composition
+}
+
+Composition: 	filled diamond		diamond towards composing (container) class
+Aggregation:	empty diamond		diamond towards aggregating (container) class
+
+-------------------------------------------------------------------
+Multiplicity:
+-------------
+	- Can be applied on: composition, aggregation & association
+	- Multiplicity can be:
+		- exactly 1	
+			- denoted by: 1	
+				- place 1 on applicable side (for association, if not unidirectional)
+				- place 1 on composed/aggregated class side (for composition/aggregation)
+		- 0 or 1
+			- denoted by: 0..1
+		- 0 or * (many)
+			- denoted by: 0..*
+		- 1 or * (many)
+			- denoted by: 1..*
+
+
+Examples of multiplicity (for association):
+-------------------------------------------
+	Class-1						Class-2		
+	Employee	[1	uses	0..1] 		OfficeComputer	bidirectional
+	Faculty		[1..*	uses	1..*] 		ClassroomPC	bidirectional
+	Buyer		[0..*	views	0..*] 		Property	bidirectional
+	VideoEditor	[0..* usesCPUforRendering 0..1] CPU		bidirectional
+	Member		[1	refers	0..*] 		Member		reflexive
+	??		[??		??] 		??		??
+
+
+Examples of multiplicity (for composition/aggregation):
+-------------------------------------------------------
+	Composing/aggregating class		composed/aggregated class
+	Car		[1		1] 	Engine
+	Aircraft	[1		2..*] 	Engine
+	Researcher	[1..*		0..*] 	Publication
+	MotherBoard	[1		1..*] 	RamSlot
+	Library		[1		1..*] 	Resource
+	MobilePhone	[1		0..1] 	ESim
+
+=======================================================================================
+
+Association:
+-------------
+
+Customer places Order
+
+
+Used straight line (no arraw)
+
+- Unidirectional association:
+	Notification	[	     	??	isSentTo]		Member
+			[		  	  1..*]
+
+- Bidirectional association:
+	Booking		[canBook      	??  	doneBy]			Member 
+			[0..*		             1]
+
+	Customer	[orderedBy  	places	canOrder]		Order
+			[1		   	    0..*]
+
+
+- Reflexive association:
+	Member		[	   refers 		]		Member 
+			[1		    	    0..*]
+
+==================================================================================
+==================================================================================
+
+Milestone-2: System Design:
+===========================
+ - It includes many things, but we will restrict ourselves in producing following deliverables:
+	- UML class diagram						: PDF
+	- Description of File structure (representing database)		: Docx
+ - To produce the above, we need a compresensive CRA-report in place (Milestone-1)
+
+------------------------------------------------------------------------------------------------
+
+Steps to built class diagram:
+-----------------------------
+
+ - Understand the growth volume of the class-instances and how to normalize the high-growth volume classes
+	- (We will try to understand this by our own terms "Master" and "Transaction" classes)
+	- Avoid redundant fields to restrict volume
+
+	Ex: 
+
+	public class Course{ //represents a course of IUB curriculum
+		private String courseID, title, courseType;
+		private int noIOfCredits;
+		private String[] prerequisiteCourseIds;
+		Document courseOutline; 
+	}
+	Q: is there any unique field?
+	A: Yes, courseID
+	Q: is it a high-grouth volume class?
+	A: No
+	Q: is there any redundant field?
+	A: No
+
+	public class OfferedCourse{ //represents a offered course offered for registration
+		private String courseID, title, roomNo, days, time, facultyName, semester;
+		private int noIOfCredits, sectionNo, capacity, enrolled=0, facultyID;
+		private String[] prerequisiteCourseIds;
+		Document courseOutline; 	
+	}
+	Q: is there any unique field?
+	A: No
+	Q: is it a high-grouth volume class?
+	A: Relatively yes
+	Q: is there any redundant field?
+	A: Yes
+=================================================================================================
+
+Master vs Transaction class:
+============================
+
+Master class: 
+-------------
+	- Class which has a unique field (value of the field is unique for each instances) 
+	  to identify an instance. 
+	- The growth of instance volume (database size) is under control / insignificant
+	- Also, there is no redundant field
+
+Transaction class: 
+------------------
+	- Class which has NO unique field (no such field, whose value is unique for each instances) 
+	  to identify an instance. 
+	- Also the growth of instance volume (database size) is relatively high
+	- It may also have redundant fields
+
+Example: Dutch Bangla Bank Limited:
+-----------------------------------
+
+#: No of daily new Account (class) is opened for the bank:
+	- No of branch: 214
+	- No of Fast Track booth: 1268
+	- No of ATM: 4930
+	- No of Agent banking: 63
+	- Assume, no of new accounts opened in a branch: 100
+	- Assume, no of new accounts opened in DBBL Fast Track booth: 50
+	- Assume, no of new accounts opened through DBBL Agent banking: 30
+
+ - No of new accounts: 214*100 + 1268*50 + 63*30 = 67,430
+ - In DBBL data center, 67,430 new records/day (Account class instances) are added to the database
+
+
+#: No of daily bank-transactions occured in DBBL:
+	- No of cash deposit in a branch: 500 				* 214 	= 107000
+	- No of check deposit in a branch: 700 				* 214 	= 149800
+	- Deposit cash using CDM in fast track: 100 			* 1268 	= 126800
+	- Deposit check using CDM in fast track: 200			* 1268 	= 263600
+	- Online fund transfer via internet banking: 50000		       	= 50000
+	- Online fund transfer via rocket (mobile banking): 10000	       	= 10000
+
+	- Withdrwal cash from each ATM: 300				* 4930 	= 1479000
+	- Encashing check from each branch: 700				* 214  	= 149800
+	- Wihdrwal as a result of online fund transfer:			       	= 50000
+	---------------------------------------------------------------------------------
+	Total bank-transactions of DBBL per day:				= 2341000
+
+- Growth of volume: 67,430 vs 2341,000
+
+
+public class Account{
+	fields: accountNo, accountName, typeOfAccount, balance,
+	address, email, contactNo, NID, .....
+}
+	- has unique field
+	- volume growth under control
+	- It is a Master class
+	- No redundant field
+
+public class BankTransaction{
+	fields: locationId, amount, typeOfTransaction, date, processedBy, 
+	accountNo, accountName, contactNo
+}
+	- No unique field
+	- volume growth is quite high
+	- has redundant field
+	- It is a Transaction class
+
+- Since volume growth is quite high, we need to normalize the class by eliminating 
+  redundant fields
+- Also we can add an unique identifyer (new unique field) to the class as follows
+
+public class BankTransaction{
+	fields: transactionId,
+	accountNo, locationId, amount, typeOfTransaction, date, processedBy
+}
+
+=================================================================================================
+ - Analyzing CRA report:
+    - Identify Model classes/interfaces representing application data:
+      ----------------------------------------------------------------
+  	- Identify USER classes
+  	- Identify NON-USER classes
+  	- Identify interfaces
+
+	- Finalize decision about the user defined type
+		- Decide whether the type will be a:
+			 abstract-class / non-abstract class / interface
+
+	- Finalize decision about the fields
+		- Decide whether the field is static or non-static
+		- Decide whether the field is final or not
+
+	- Finalize decision about the methods
+		- Decide whether the method is static or non-static
+		- Decide whether the method is abstract or not
+		- Decide whether the method is final or not
+		- ## Does this method use user input from view (controller classes's private fxids) or not?
+			: if yes, the user input should come as parameter from handler method
+		- ## Does this method returns data/status back to the UI-scene or not?
+			: this will guide to decide the return type of the method
+
+    - Identify Controller classes representing UI-scene:
+      --------------------------------------------------
+	 - We will talk more on this when we start building FXML application (next class)
+=================================================================================================
+
+=================================================================================================
+- After detection of classes, we need to establish relationships among those classes:
+	- inheritance
+	- aggregation
+	- composition
+	- association and,
+	- multiplicity (0:1, 1:1, 1:M, M:1, M:M, *:M, M:*)
+
+- Then draw the UML class diagram for the above using one of the online tools. We will
+  use lucidchart
+
+=================================================================================================
+
+Writing workflow for a sample goal (IRAS):
+==========================================
+
+User: Student
+  - Goal-1: Register courses for upcoming semester
+    - Workflow:
+	e1: check login credential (give detail....)
+	e2: if login successful, load Student-specific homeScene, else go-back to login/forgotPW
+	e3: after selecting "rigister course" option, it will check the following: document pending/
+		date & time-slot/ probation-status. If verified positive, a new scene will appear and
+		pre-loaded with ALL applicable offered-course (info of offered courses such as:
+		courseID, title, roomNo, days, time, facultyID, facultyName, semester, noIOfCredits, sectionNo, 
+		capacity, enrolled, prerequisiteCourseIds...) 
+		for the student. Else, it will prompt to contact the registrar office.
+	e4: Student will select ONE-Course at a time and it will check:
+		- capacity, time-clash-with-already-selected-courses
+	e5: proceed to register, and it will check:
+		- final Check of capacity for all selected courses
+		- no of credit taken is within the range [9 to 18]
+		- for "Course/Lab" paired courses whether one is left out or not
+		- ....
+	e6: If above checking are positive, comit to database and generate bill.
+	    	Bill content: .......
+
+
+Drawing UML class-diagram (partial) using CRA-Report (IRAS):
+============================================================
+
+public class Student:
+
+public class Faculty:
+	- facultyId, facultyName, desig, dept, salary, doj, dob,....
+
+public class Course: [Master class]
+	- courseId, courseTitle, noOfCredits, preRequisiteList,...
+
+public class CourseTimeStamp{
+	year, semester, day, time;
+}
+
+
+public class OfferedCourse: [Unnormalized Transaction class]
+	- courseId, courseTitle, noOfCredits, sec, CourseTimeStamp timeStamp, facultyId, 
+	  facultyName, roomNo
+
+
+public class OfferedCourse: [Normalizing Transaction class, eliminating redundant fields]
+	- courseId, sec, CourseTimeStamp timeStamp, facultyId, location
+
+public class RegisteredCourse: [fields StudentID, courseID, timeStamp, section]
+
+public class RegistrationBill:
+	- billNo, totalAmount
+	- public void generateBillPdf(){
+		use "registeredcourse.bin" file rom database
+	}
+
+
+----------------------
+RegisterCourseScene.fxml
+class RegisterCourseSceneController .....{
+	@FXML private
+	ArrayList<CourseTimeStamp> selectedCourseTimeStamp;
+	ArrayList<Integer> selectedCourseIDs;
+	proceedToRegisterCourseButtonOnClick(...){
+		//commit to database
+		write to file: "1234567-registeredcourse.bin"
+		int <student id>
+		int<1th-coutseId>, selectedCourseTimeStamp-instance
+		int<2th-coutseId>, selectedCourseTimeStamp-instance
+		int<3th-coutseId>, selectedCourseTimeStamp-instance
+		int<4th-coutseId>, selectedCourseTimeStamp-instance
+		.....
+		int<nth-coutseId>, selectedCourseTimeStamp-instance
+		//arraylist end here
+		//end of file writing
+	}
+
+}
+
+
+
+=================================
+
+public class Student exteds.... implements...,...,...{
+	//fields
+
+	/*
+	public void setStudentInfo(){
+		//id = user input from console: OK
+		//name = user input from TextField of controller class: NOT OK, 
+		//TextField fxid is private in controller class, NOT accessiable to method of Student class
+	}
+	*/
+	
+	public boolean setStudentInfo(int id, name String,...){
+		this.id = id	//OK
+		//TextField valuue of controller class is/are passed as parameter
+	}	
+}
+
+
+============================================================================================
+Lab Exercise:
+-------------
+IRAS users: Student, Faculty, LibraryOfficer, AccountsOfficer, RegistrationOfficer, 
+	AdmissionOfficer, FinalcialAidOfficer, HOD, Dean, OfficeManager, VCOfficeExecutive, 
+	VC, ProVC, Treasurer, BoTMember, CITSAdmin, ....
+
+	For the Student dashboard of IRAS, we will try to identift the elements needed
+	to draw UML class diagram
+
+- Student is a user of IRAS
+	Goal-1: Check attendance of a course
+	Goal-2: Update profile information
+	Goal-3: Declaring major/minor
+	Goal-4: Pay bill
+	Goal-5: Register course for upcoming semester 
+	Goal-6: Add/Drop course for current semester 
+	Goal-7: Withdraw course for current semester 
+	Goal-8: Generate transcript
+	Goal-9: Evaluate Faculty
+	Goal-10: Apply for financial aid
+	Goal-11: .....
+
+
+Classes:
+--------
+
+User classes:
+---------------
+public abstract class User{
+
+	
+}
+public class Student extends User{	}
+public class Faculty extends User{	}
+public class HOD extends User{	}
+public class RegiatrationOfficer extends User{	}
+public class FinancialAidOfficer extends User{	}
+public class AccountsOfficer extends User{	}
+
+
+Non-User classes:
+---------------
+public class Course{	}
+public class OfferedCourse{	}
+public class RegiateredCourse{	}
+public class AttepmtedCourse{	}
+public class Document{	}
+public class Bill extends Document{	}
+public class Transcript extends Document{	}
+public class Assignment extends Document{	}
+public class Notice extends Document{	}
+Public class Scholarship{	}
+
+
+
+
+
+
+
+
+public abstract class User{
+	protected fields: userid, name, dob, bg, gender, nid, password, email, address
+
+
+	public abstract boolean setUserInfo(.....);		// [;/{}]
+	final public boolean login(....){...}	//final method
+
+
+	//public abstract void applyForLeave();
+	//It will force BoTMember to implement applyForLeave, which is irrelevant for them
+	//Therefore, we will keep the abstract method in an interface
+}
+
+public interface LeaveApplication{
+	public void applyForLeave();
+}
+
+public class Student extends User{
+	private int studId; private String major, minor;
+	private ArrayList<AttemptedCourse> grades;	//for option-1 of AttemptedCourse class
+	public ?? checkAttendance(...)??
+	public ?? updateProfile(...)??
+	public ?? payBill(...)??
+	public ?? evaluateFaculty(...)??
+
+}
+
+public class Faculty extends User implements LeaveApplication{	}
+public class FinalcialAidOfficer extends User implements LeaveApplication{	}
+public class RegistrationOfficer extends User implements LeaveApplication{	}
+....
+public class BoTMember extends User{	}
+
+public interface I1{	}
+Q: Can we do the following extension?
+	..... extends I1{	}
+A: Yes/No
+	public class C2 extends I1{	}: NOT OK
+	public interface I2 extends I1{	}: OK
+
+public class Bill{	}
+
+public class Course{	}
+
+public class OfferedCourse{	}
+
+
+
+//option-1 (composition), where Student maintains a collection of AttemptedCourse instances
+public class AttemptedCourse{	
+	courseId, semester, sec, letterGrade
+}
+
+//option-2 (association), where ALL grades instances will be dumped in a single table of the database
+public class AttemptedCourse {
+	studId, courseId, semester, sec, letterGrade
+}
+
+public class Scholarship{	}

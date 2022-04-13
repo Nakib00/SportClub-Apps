@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="464.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dockyard.management.RegistrationScreenController">
+  <children>
+    <MenuBar VBox.vgrow="NEVER">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" text="New" />
+            <MenuItem mnemonicParsing="false" text="Open…" />
+            <Menu mnemonicParsing="false" text="Open Recent" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Close" />
+            <MenuItem mnemonicParsing="false" text="Save" />
+            <MenuItem mnemonicParsing="false" text="Save As…" />
+            <MenuItem mnemonicParsing="false" text="Revert" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Preferences…" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Quit" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Undo" />
+            <MenuItem mnemonicParsing="false" text="Redo" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Cut" />
+            <MenuItem mnemonicParsing="false" text="Copy" />
+            <MenuItem mnemonicParsing="false" text="Paste" />
+            <MenuItem mnemonicParsing="false" text="Delete" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Select All" />
+            <MenuItem mnemonicParsing="false" text="Unselect All" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="422.0" prefWidth="640.0" VBox.vgrow="ALWAYS">
+      <children>
+            <Label layoutX="202.0" layoutY="93.0" text="Name:" />
+            <Label layoutX="217.0" layoutY="126.0" text="ID:" />
+            <Label layoutX="180.0" layoutY="159.0" text="password:" />
+            <Label layoutX="201.0" layoutY="223.0" text="Email:" />
+            <Label layoutX="190.0" layoutY="297.0" text="Address:" />
+            <Label layoutX="196.0" layoutY="255.0" text="Phone:" />
+            <Label layoutX="182.0" layoutY="190.0" text="Usertype:" />
+            <TextField fx:id="userIDTextfield" layoutX="253.0" layoutY="122.0" />
+            <TextField fx:id="passwordTextfild" layoutX="253.0" layoutY="155.0" />
+            <TextField fx:id="emailIDTextfield" layoutX="253.0" layoutY="219.0" />
+            <TextField fx:id="phoneTextfield" layoutX="253.0" layoutY="251.0" />
+            <ComboBox fx:id="userTypeBar" layoutX="252.0" layoutY="186.0" prefWidth="150.0" />
+            <TextArea fx:id="addressTextfield" layoutX="253.0" layoutY="282.0" prefHeight="47.0" prefWidth="218.0" />
+            <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="220.0" layoutY="1.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="file:/C:/Users/bapti/Desktop/Java%20(CSE213)/pic/DockYard_Logo.png" />
+               </image>
+            </ImageView>
+            <Button fx:id="registerButton" layoutX="294.0" layoutY="360.0" mnemonicParsing="false" onAction="#registerButtonClicked" text="Register" />
+            <TextField fx:id="userNameTextfield" layoutX="253.0" layoutY="89.0" />
+      </children>
+    </AnchorPane>
+  </children>
+</VBox>

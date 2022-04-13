@@ -1,0 +1,1 @@
+student{id=2022142, name=nakib, cgpa=3.3}student{id=190235, name=hana, cgpa=3.9}

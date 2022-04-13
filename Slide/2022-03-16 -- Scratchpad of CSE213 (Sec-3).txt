@@ -1,0 +1,319 @@
+2022-03-16 -- Scratchpad of CSE213 (Sec-3)
+==========================================
+
+Input/Ouput (I/O):
+==================
+	- Input: writing content to the memory (input for memory)
+	- Output: reading content from the memory (output from memory / literal)
+
+	- Console I/O: 
+		- Input (write): We take input from console input device (by default: keyboard) & store in 
+			  memory (variable/instance)
+	 	- Output (read): We read content from memory (variable/instance) & send output to 
+			  console output device (by default screen)
+
+	- File I/O: 
+		- We take input from a file (no default, we have to specify the source file)
+			& store in memory (variable/instance)
+	 	- We read content from memory (variable/instance) & send output to 
+			a file (no default, we have to specify the destination file)
+
+	## For ANY KIND of Input, we need to use one of the suitable INPUT-STREAM CLASS INSTANCE 
+		as a bridge between the source of input and memory
+
+	## For ANY KIND of Output, we need to use one of the suitable OUTPUT-STREAM CLASS INSTANCE 
+		as a bridge between the destination of output and memory
+
+I/O in C++:
+===========
+	Type of I/O		Stream class name	Purpose
+	--------------		------------------	--------------------------
+	Console input		istream			writing to memory, from KB
+	Console output		ostream			reading from memory, to screen
+
+	File input		ifstream		writing to memory, from a specified file
+	File output		ofstream		reading from memory, to a specified file
+	File Input & Output	fstream			reading and writing- using same stream from/to a file
+
+
+Console I/O in Java:
+====================
+	Type of I/O		Stream class name	Purpose
+	--------------		------------------	--------------------------
+	Console input		InputStream(System.in)	writing to memory, from KB
+	Console output		PrintStream(System.out)	reading from memory, to screen
+
+	- instead of using read methods of InputStream class, [ System.in.read(); ] we use Scanner instance
+	  and provide InputStream instance (System.in) to the constructor of Scanner as the source of scanning
+ 	  for convenience.
+
+File Handling in Java (File I/O):
+=================================
+
+	- Text file: 
+		- Stores character, so that any text editor can open & read the content as characters
+			Ex: If your ID is 1830289, in text file it will be stored as
+				"1830289", content size will be 7 bytes for 7 characters
+	- Binary file:
+		- Stores raw data
+			Ex: If your ID is 1830289, in binary file actual bytes of the value will stored.
+				therefore, content size will be 4 bytes as the input is an integer
+
+Difference between text & binary file:
+--------------------------------------
+ - Storage device stores: binary equivalent (irrespective of file type)
+	- SSD/FlashDrive/RAM: presence/absence of electric charges
+	- Magnetic drive: megnetized/demagnetized cell
+	- optical drive: high/low intensity laser pits
+
+ - Text file:
+	- Every bytes of a text file is considered as the ascii code of a character
+	- When we open a text file using a text editor (notepad, subline, word,...)
+		it shows corresponding character for the bytes stored in that file
+	- Therefore, we use text file to store textual data
+
+ - Binary file:
+	- Store raw data:
+		- image file (collection of pixel bytes)
+		- Audio file	
+		- video file
+		- writing/reading instances to/from file
+		- database
+
+Q: What type of file you will use for your project
+A: 
+	- Mostly we will use binary files (for application data)
+	- A few text files (readme/help/FAQ/installationGuide, etc)
+
+
+Why we will use binary file for our project:
+============================================
+
+Suppose we have an int x = 123
+binary of 123 (4 bytes) is:  00000000 00000000 00000000 01111011
+these 4 bytes need to be converted to bytes (ascii code) of character '1', '2' & '3'
+	
+binary of "123": 		00110001 00110010 00110011
+				ascii:49   50	    51
+
+ - While writing: Integer.toString(..);	//additional task
+	Conversion: 00000000 00000000 00000000 01111011 --> 00110001 00110010 00110011
+
+ - While reading : Integer.parseInt(..);	//additional task
+	Conversion: 00110001 00110010 00110011 --> 00000000 00000000 00000000 01111011
+
+ - Also, keeping application data in text file will allow anyone to view the content using
+	any text editor. But the content of a binary file can't be retrieved unless the 
+	user knows the metadata.
+
+ - We can also have some text file in our project such as "readme.txt", "faq.txt", "about.txt"
+
+
+Streams that we can use to perform file I/O in java:
+===========================================-========
+
+- Byte stream					[Both for text & binary file]
+	- read/write raw bytes from/to file
+	Classes:
+		Reading: FileInputStream
+		Writing: FileOutputStream
+
+- Character stream				[For text file, recommended]
+	- read/write characters from/to file
+	Classes:
+		Reading: FileReader or Scanner for convenience (File will be source of Scanner)
+		Writing: FileWriter
+
+- Data stream					[For binary file]
+	- read/write different data types as it is (their actual bytes) from/to file
+	Classes:
+		Reading: DataInputStream
+		Writing: DataOutputStream
+
+	As an intermediate layer to increase read/write efficiency, we can use Buffer in between
+	Data & Byte streams
+		Classes: BufferedInputStream & BufferedOutputStream
+
+- Object stream					[For binary file]
+	- read/write deserialized/serialized instances from/to file
+	Classes:
+		Reading: ObjectInputStream
+		Writing: ObjectOutputStream
+
+Text File:
+	- We can use Byte stream (if it is 1-byte ASCII character) as well as Character stream
+	- However, character stream is recommended for text file
+
+Binary file:
+	- Data & Object stream will be used for your project. However, these Data & Object stream
+		will internally use Byte stream
+	- To generate pdf/jpg --> Byte stream
+	- int/float/String & mix of them --> Data stream
+	- Only class instances --> Object stream
+
+NOTE: To perform file IO, we need to deploy Exception Handling mechanism
+
+===============================================================================================
+tO BE CONTINUED IN NEXT CLASS...
+
+Exception Handling:
+===================
+	int main(){
+		int a,b,c;	cin>>a>>b;
+		c = a/b;			//division by zero
+		cout<<a<<b<<c;
+		return 0;
+	}
+
+	//we can avoid this / by 0 situation by optimizing our source code, 
+	//Without deploying Exception hndling mechanism.
+	int main(){
+		int a,b,c;	cin>>a;
+		do{
+			cin>>b;
+		}while(b==0);
+		c = a/b;	//critical statement
+		cout<<a<<b<<c;
+		return 0;
+	}
+
+- So far, the programs that we have written had some critical statements, and by analyzing
+   the source code, compiler knows potential exception from those critical statements
+   can be avoided by optimizing the source code	[UNCHECKED Exception].
+
+- Therefore, compiler never forced us to deploy EH-mechanism for potential UNCHECKED exceptions. 
+
+- BUT, there can be some critical statements which might fail during runtime due to some
+   external factors, which is beyond the control of the programmer, and therefore it
+   may not be possible to avoid that situation by optimizing our source code. [CHECKED Exception]
+
+- For these critical statements having potential for CHECKED exception, 
+	compiler forces us to deploy EH-mechanism:
+		- using try-catch-finally block
+
+- File I/O related exceptions are CHECKED exception, 
+
+- File handling is one such case, where exception handling is enforced.
+
+
+What is Exception????
+---------------------
+	In C++: It can be any data type
+	In Java: It is an instance of ONE-OF-THE Exception class family (inheritance)
+
+int cppArr[5] = {1,2,3,4,5};
+	cout<<cppArr[2];	//3
+	cout<<cppArr[5];	//garbage
+
+int[] javaArr = {11,22,33,44,55};
+	sout(cppArr[2]);	//33
+	sout(cppArr[5]);	//wll throw ArrayIndexOutOfBoundsException, if not handled, 
+				//program will crash
+
+
+public class SomeClass{
+	public void someMethod(){
+		Scanner s = new Scanner(System.in);
+		a = s.nextInt(); b = s.nextInt();
+		
+		c = a/b;	
+		// if b is zero, and code is not optimized, so, / by 0 will occur
+		//at this point an ArithmeticException instance will be thrown implicitly by the JVM
+		//and since there is no catch block, the program will crash immediately
+
+		sout(...);	//this line and lines below will never be executed..
+		......		
+	}
+}
+
+
+
+public class SomeClass{
+	public void someMethod(){
+	    try{
+		Scanner s = new Scanner(System.in);
+		a = s.nextInt(); b = s.nextInt();
+		
+		c = a/b;
+		// if b is zero, and code is not optimized, so, / by 0 will occur
+		//at this point an ArithmeticException instance will be thrown implicitly
+		//and since there is no catch block, the program will crash immediately
+
+		sout(...);	//this and lines below will never be executed..
+		......	
+ 	    }
+	    catch(ArithmeticException e){ 
+		//exception handling code	
+		//e.someMethodOfArithmeticException();
+		//e.someGetter(); //to get exception related info to show to the user
+		//your own handling code...
+	    }
+	    catch(RuntimeException e){ 
+		//your own handling code...
+	    }
+	}
+}
+
+- You can also have your own exception:
+	public class MyException extends AnyOfTheExceptionClassFromExceptionHierarchy {
+
+	}
+
+Five keywords that we need to understand for exception handling:
+----------------------------------------------------------------
+try:
+----
+	- represents the block where the critical statements are kept
+		(we try to execute critical ststemets here)
+	- can have nested try blocks
+	- while trying to execute the code inside try block, if an exceptional context arise
+		a suitable Exception type instance is thrown by the JVM. Therefore, 
+		there must be atleast one (or more) corresponding handling block (catch) 
+		associated with the try block.
+	- the thrown instance contains runtime contextual data of the exceptional situation
+		as fields, which can be used in catck block for amicable solution
+	- Once an exception is thrown at a critical ststement, control will leave the try block
+		and as a result, rest of the statements of the try block will NEVER be ececuted
+
+catch:
+------
+	- exception handling block (handling code are kept here)
+	- When multiple catch blocks are associated with a try block, we keep the:
+		MOST specific catch block (subclass) at the top, and  
+		MOST generic (superclass) catch block at the bottom.
+
+finally:
+--------
+
+throws:
+-------
+
+throw:
+------
+
+=====================================================================
+Inappropriate order of the catch blocks:
+
+try{
+	//citical statements
+}
+catch(Exception e1){...; e1.someMethod();....;}
+catch(RuntimeException e2){...; e2.someMethod();....;}
+catchArrayIndexOutOfBoundsException e3){...; e3.someMethod();....;}
+catch(ArithmeticException e4){...; e4.someMethod();....;}
+catch(IOException e5){...; e5.someMethod();....;}
+catch(EOFException e6){...; e6.someMethod();....;}
+
+------------------------------------------------------
+Right order of the catch blocka:
+
+try{
+	//citical statements
+}
+catch(ArrayIndexOutOfBoundsException e3){...; e3.someMethod();....;}
+catch(ArithmeticException e4){...; e4.someMethod();....;}
+catch(RuntimeException e2){...; e2.someMethod();....;}
+catch(EOFException e6){...; e6.someMethod();....;}
+catch(IOException e5){...; e5.someMethod();....;}
+catch(Exception e1){...; e1.someMethod();....;}
+

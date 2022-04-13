@@ -1,0 +1,627 @@
+2022-03-07 -- Scratchpad of CSE213 (Sec-3)
+==========================================
+
+==========================================================================================================
+==========================================================================================================
+
+
+Polymorphism:
+=============
+	- In programming context, polymorphism is the capability of demonstrating different behaviours
+		of a method, based on context
+
+	- can be:
+		- static polymorphism (compile-time/static binding, 
+		   where compiler can decide at compile time which behaviour to exhibit)
+			C++: 	method overloading & 	operator overloding
+				c3 = c1.add(c2);	c3 = c1 + c2;
+				c3 = c1.add(12);	c3 = c1 + 12;
+
+			Java: method overloading
+
+		-------------------------------------------
+		- dynamic polymorphism (run-time binding, 
+		  where compiler CAN'T decide at compile time which behaviour to exhibit)	
+			- C++/Java: method Overriding
+			- behaviour to exhibit will be decided at runtime, 
+				depending on client-instance of the method call
+
+		- superclass handles play a vital role in acheiving dynamic polymorphism,
+		  	as superclass handle can represent any subclass instance (because of "is-a" relationship)
+
+			Ex: 
+			public class Person{
+				... 
+				void doSome(){...} 
+				...
+			}
+		
+			public class Employee extends Person{
+				...
+				@Override 
+				void doSome(){...} 
+				...
+			}
+
+			public class Student extends Person{
+				... 
+				@Override
+				void doSome(){...} 
+				...
+			}
+
+			public class MainClass{
+				p s v main(...){
+					Random r = new Random();
+					Person p;
+					//ch = r.nextInt();	//large random int will be returned
+					//ch = r.nextInt(20);	//random int will be returned from: 0 to 19
+
+					int ch = r.nextInt(3)+1;	//1 to 3
+					if(ch==1) p = new Person();
+					else if(ch==2) p = new Employee();
+					else if(ch==3) p = new Student();
+
+					p.doSome();			//dynamic polymorphism
+					// doSome of which class (Person/Employee/Student) to be executed,
+					// will be decided at runtime by checking which class instance is
+					// currently represented by superclass handle p.
+				}
+			}
+
+==========================================================================================================
+==========================================================================================================
+
+
+Abstract class:
+===============
+	- It is a class which can't be instantiated/initialized
+
+	- We can only can declare its handle & use it to represent subclass instances
+		- Q: Why on earth we would do this?
+		  A: To take advantage of dynamic polymorphism
+
+	- In general, abstract classes are superclass which acts as a facilitator to acheive dynamic polymorphism	
+
+	Example of dynamic polymorphism:
+	--------------------------------
+
+	- Using multiple arrays is not convenient, as well as its not possible to acheive polimorphic behaviour:
+
+		public class Granade{...}
+		public class Pistol{...}
+		public class Sword{...}
+		Granade[] granadeArr;
+		Pistol[] pistolArr;
+		Sword[] swordArr;
+
+	- For example, if we want to maintain an ARRAY of weapons within the context of a video game, 
+	  where Weapon is a generalization (superclass) but in reality only subclass instances 
+	  exists within the memory, then we can use Weapon handles to instantiate Granade, 
+	  Pistol and Sword instances, provided that they are subclass of Weapon. This will allow
+	  us to acheive polymorphism (polymorphic behaviour).
+
+			public class Weapon{...}
+			//It is too generic to visualize & have a Weapon instance in the application
+			//rather we will visualize & instanciate subclass instances
+			//In that case, Weapon is a suitable candidate for being an anstract class
+			public abstract class Weapon{...}	
+
+	 		public class Granade extends Weapon{...}
+	 		public class Pistol extends Weapon{...}
+	 		public class Sword extends Weapon{...}
+			Weapon[] weaponArr;
+			weaponArr = new Weapon[??];
+			weaponArr[i] = new Granade();
+			weaponArr[j] = new Pistol();
+			weaponArr[k] = new Sword();
+
+	- In this example, Weapon qualifies to be an abstract class
+		so we can define Weapon as an abstract class (instead of non-abstract/regular class):
+			public abstract class Weapon{...}
+			OR
+			abstract public class Weapon{...}
+
+	- If there is NO abstract method in a class, still the author can declare the class
+	  as abstract to prevent instantiation. As a consequence, handle of the class can be declared, 
+	  but instance of that class CAN'T be created
+
+	- If there is An abstract method in a class, then it is mandatory for the author 
+	  to declare the class as an abstract class. Now since the class is abstract, then
+	  the only role of the class is to act as a superclass to facilitate inheritance. In that
+	  case, it is mandatory for the subclasses to override all the inherited abstract methods
+
+	Note:
+		- weaponArr = new Weapon[??];
+		- In our above example, there is a limitation of array: once allocated, size is fixed
+	  		- Weapon[] wArr = new Weapon[n];	//fixed to n weapons
+
+		- If we want to use a flexible dynamic collection, array is not a good choice.
+	        	In that case, we can use Generic Collection classes from library
+		        such as ArrayList, List, Vector, Stack, Queue, Map, Set....
+			- ArrayList<Weapon> wList = new ArrayList<Weapon>();
+			  Student	    asif  = new Student          (); 
+
+
+Abstract Method:
+----------------
+	- Abstract method is nothing but the UN-IMPLEMENTED method declared in superclass
+
+	- It is just the prototype of a method
+
+	- Since abstract method don't have any implementation within the super class, then
+	  it can't be called using a superclass instance as client (because there is no implementation 
+	  of the method in superclass, and if that method is called, then the program will crash).
+
+	-  Therefore, if a class has an abstract method, the class MUST be an abstract class
+		Ex: 
+		public abstract class SuperClass {
+			public abstract void doSome();
+			public void doAnother(){.....}
+		}
+		public class SubClass extends SuperClass{...}
+
+		public class MainClass{
+			p s v main(...){
+				SuperClass obj1 = new SuperClass();	//??
+				//Allowed, if the class is not abstract
+				//NOT Allowed, if the class is abstract
+
+				obj.doAnother();	//OK
+				obj.doSonme();		//ERROR
+			}
+		}
+
+
+	- The reverse is not necessarily true. An abstract class can contain non-abstract (REGULAR)
+	  methods too. However, the definition of the method will be inherited in subclasses and only 
+	  subclass instances can be the client of that non-abstract inherited method of the superclass. Its only 
+	  logical for an abatract class to have an implemented (non-abstract) method, if the definition-code 
+	  is common to ALL the subclasses
+
+	- A subclass can override an implented(non-abstract) inherited method, but its optional. 
+
+	- But it is MANDATORY for the subclass (unless the subclass also is an abstract class) to override 
+	  all non-implemented(abstract) inherited methods, so that if those methods are called using 
+	  subclass instance as client, it is guranted that there exists some definition to execute.
+	
+==========================================================================================================
+==========================================================================================================
+Generic class:
+==============
+	- It is a class whose (one/more) field's type is not defined as a legitimate type in class definition
+	- Rather a capital letter is used as a generic type for the field, which is replaced by a
+		legitimate type while declaring handle of that generic class
+
+	Ex:
+		public class IntStack{
+			private int[] vals; 
+			private int top;
+			public IntStack(){
+				vals = new int[10]; int top=-1;
+			}
+			public void push(int data){
+				if(top<vals.length-1){
+					vals[++top] = data;
+				}
+				else sout("Stack overflow");
+			}	
+			int pop(){
+				if(top<0) sout("Stack underflow");
+				return -1000000000;
+				else{
+					top--
+					return vals[top+1];
+				}
+			}		
+		}		
+
+		IntStack stk1 = new IntStack();
+		stk1.push(12);
+		
+		Q: Can we use this stack to push/pop float?
+		A: No. We have to define another class called FloatStack{...}
+
+
+	- Better choice for Stack implementation is to implement it as a generic class
+		public class Stack<E>{
+			private E[] vals;
+			private int top;
+			public Stack(){
+				vals = new E[10]; int top=-1;
+			}
+			public void push(E data){
+				if(top<vals.length-1){
+					vals[++top] = data;
+				}
+				else sout("Stack overflow");
+			}
+			E pop(){
+				top--
+				return vals[top+1];
+			}			
+		}		
+
+		Stack<int> stk1 = new Stack<int>();
+		stk1.push(12);
+
+		Stack<float> stk2 = new Stack<float>();
+		stk2.push(12.3f);
+
+		Stack<char> stk3 = new Stack<char>();
+		stk2.push('A');
+			
+===================================================================================================
+
+Regular vs Advance 'for' loop:
+==============================
+
+ - Regular for loop: 
+   -----------------
+	- format:
+		for( loopVariable = initialValue; terminatingCondition; howLoopVariableChanges){
+			//
+		}
+
+	- Can be used to iterate a set of statements for several times (using collection is optional)
+		Ex: for(i=0;i<10;i++){ sout(i); }
+
+	- Can ALSO be used to iterate through the elements of a collection
+		Ex: int arr[] = new int[10];
+		Ex: for(i=0;i<arr.length;i++){ sout(arr[i]); }
+
+ - Advance for loop: 
+   -----------------
+	- format:
+		for( collectionElementType dummyElementName: collectionName){
+			dummyElementName will represent elements of the collection 1-by-1 through each iteration
+		}
+
+	- Can be used to iterate through the elements of a collection ONLY. 
+	- Without collection we can't use advance for loop
+		Ex: int arr[] = new int[10];	 
+		for( int val : arr ){
+			sout(val);
+		}
+
+	- We don't need to know the size of the collection
+
+
+===================================================================================================
+
+System.out.println("Enter [4] to view ALL Weapons");
+
+Using regular for loop:
+-----------------------
+	for(i= 0; i<eList.size(); i++){
+		if(wList[i].showGranade();
+	}
+
+	Follow discussion done while explaining using NetBeans project
+
+==========================================================================================================
+==========================================================================================================
+
+
+Types of Inheritance:
+=====================
+
+	Simple inheritance:
+	-------------------
+	SuperClass	:	Food
+	SubClass	:	WholeFood / ProcessedFood
+
+	MultiLevel inheritance:
+	-----------------------
+	SuperClass	:	Employee
+	SubClass	:	Faculty
+	SubSubClass	:	AdjunctFaculty
+
+	Multiple Inheritance:
+	---------------------
+
+
+Multiple Inheritance:
+=====================
+
+	- There are multiple source of inheritance
+
+	- If a new class has two or more (multiple) ancestors, then we call it multiple-inheritance
+
+	public class Super1{
+		//protected fields
+		public void doSome1(){...}
+		//public void print(){....}
+	}
+
+	public class Super2{
+		//protected fields
+		public void doSome2(){...}
+		//public void print(){....}
+	}
+
+
+	public class Sub extends Super1, Super2{ 	//say for the sake of discussion
+		//additional private fields
+		public void doSomeOwnWork(){...}
+	}
+	
+	p s v m(....){
+		Sub obj = new Sub();
+		obj.doSome1();		//OK
+		obj.doSome2();		//OK
+		obj.doSomeOwnWork();	//OK
+
+		//obj.print();		//Ambiguity, NOT OK
+		//Two definitions of same signature is inherited from two ancsetors
+		//creating ambiguity/confusion to compiler, not acceptable
+
+		//C++ will leave the responsibility to discover such ambiguity of multiple
+		//definition conflict of same method inherited from different superclasses on the
+		//programmer. It will allow the subclass to have multiple superclasses to acheive
+		//multiple inheritance
+
+		//On the other hand, Java knows that there is a potential of having such definition
+		//conflict in subclass, therefore java does not ALLOW a subclass to have more than
+		//one superclass. 
+
+		Q: Then How multiple inheritance can be acheived in Java?
+		A: 
+			- Java newclass can have one superclass as an ancestor
+			- And the newclass can have rest of the ancestors as "Interface"
+
+Interface:
+==========
+	- It is a cousin of Abstract class
+
+	- An interface can't have any implemented (non-abstract methods) method. 
+	  ALL methods in an intercace MUST be ABSTRACT method
+
+	- Fields of an interface must be: static as well as final (shared as well as constant)
+
+	Syntax:
+	-------
+	public interface InterfaceName1{
+		//static final fields, if any
+		//abstract methods
+	}
+
+	public class NewClassName extends SuperClassName implements InterfaceName1, InterfaceName2{
+		//...
+	}
+
+	
+Q: If no methods are implemented in an Interface, that what is its role?
+A: 
+	- Interface's role is to enforce certain behaviour in implementing class
+	- It focuses on 'what' behaviour, not on 'how' the behaviour is exhibited
+
+	NOTE:
+	- Superclass also enforce behaviour on subclass.
+	    - abstract method of superclass focuses on 'what' behaviour should be exhibited,
+		not on 'how' the behaviour is exhibited in subclass
+	    - Non-abstract (implemented) method of superclass focuses on 'what & how' a behaviour 
+		should be exhibited in subclass
+
+Q: Then, why we can't we keep those abstract methods of interface in the superclass itself
+	instead of creating those interfaces, and avoid multiple inheritance alltogether?
+A:
+	- If a method of superclass is not relevant to ALL subclasses (including sub-subclasses),
+	   but relavent to some of them, then we can't keep that method in superclass.
+
+	- Therefore, we will keep that abstract-method in an interface and all relevant classes ONLY 
+	   will implements that interface to have that behaviour.
+
+	- If we want to instanciate superclass, too; then we can't keep any abstract method in superclass
+
+==========================================================================================================
+==========================================================================================================
+
+
+'final' keyword:
+-----------------
+	- final field: constant, 
+	  ---------------------
+		for primitives: once initialized at the time of declaration (value given for primitives), 
+				later on the value of the primitive can't be changed
+
+		for aggregated/composed handles: once instantiated, later on the handle can't be assigned
+				with another instance
+
+	  value MUST be given at the time of memory allocation
+
+		C++: 	int x, z=30;
+			x=20;
+			const int y;	//error
+			const int y=20;	//OK, y will be 20 for its lifetime
+
+
+		Java: 	int x, z=30;
+			x=20;
+			final int y;	//error
+			final int y=20;	//OK, y will be 20 for its lifetime
+			
+			final Date doj;	//error
+			final Date doj = new Date(..,..,..);	//OK, initialized
+			Date d = new Date();	//OK, initialized
+			....
+			doj = d;		//error, already initialized, and doj is final, can't change instance
+			doj = new Date();	//error, already initialized, and doj is final, can't change instance
+
+	- final method: 
+	  -------------
+		its a superclass method (implemented), which can't be overridden in subclass
+
+
+	- final class: 
+	  ------------
+		its a class which can't be extended
+
+
+==========================================================================================================
+==========================================================================================================
+
+Interface Exapmle:
+------------------
+
+Note:
+  - While establishing "Is-a" relationship among interface and implementing class,
+    we need to focus on either:
+	- implementing class instance can be viewed as an interface type object
+	- implementing class instance can be capable of (is-capable of) demonstrating behaviour of the interface
+
+-------------------------------------------------------------------------
+Project Topic				: ???
+Interface Name				: ???
+Interface method1 name			: ???
+Interface method2 name			: ???
+Interface field (static+final) name	: ???
+
+Implementing class name1		: ???
+Implementing class name2		: ???
+-------------------------------------------------------------------------
+Project Topic				: Land Registration
+Interface Name				: NoticeViwable
+Interface method1 name			: viewNotice();
+Interface method2 name			: ???
+Interface field (static+final) name	: String fileName = "govtNotice.bin";
+
+Implementing class name1		: Seller
+Implementing class name2		: ???
+-------------------------------------------------------------------------
+Project Topic				: MindCraft Game
+Interface Name				: public interface Maneauverable
+Interface method1 name			: public void maneuverOnWater();
+Interface method2 name			: ???
+Interface field (static+final) name	: ???
+
+Implementing class name1		: Boat implements Maneaurable
+Implementing class name2		: Player implements Maneaurable
+-------------------------------------------------------------------------
+
+==========================================================================================================
+==========================================================================================================
+
+Graphical User Interface in Java:
+=================================
+
+- FXML uses MVC framework
+	M: Model
+		- Model classes represents your application data (ex: Student, Employee, Book, Computer, ....)
+	V: View
+		- The visual scene of desktop/mobile application (page for web application)
+		- represents the UI
+	C: Controller
+		- 
+
+==========================================================================================================
+==========================================================================================================
+
+
+UML Diagram:
+============	
+
+Class/Interface:	
+	- Represented by a box
+	- Has 3 compartments:
+		- Top compartment will have name
+		- Middle compartment will have fields
+		- Middle compartment will have methods
+
+Access specifiers:
+-----------------
+private:	-
+protected	#
+package		~
+public		+
+
+Modifiers:
+----------
+Static: underline			Ex: memberCount
+					    ___________
+
+Read only (final)  	{readOnly}	Ex: dateOfJoining
+unique			{unique}	Ex: email, ID, etc
+collection []
+visitors String[*/3]	{unique}			
+
+-------------------------------------------------------------------
+Inheritance:
+------------
+Solid arrow from subclass to superclass
+Dashed arrow from implementing class to interface
+
+-------------------------------------------------------------------
+
+Abstract class			:	italic
+Abstract method			:	italic
+
+Non-abstract (concrete) class	:	normal font
+Non-abstract (concrete) method	:	normal font
+
+Interface: 	<<Interface>>
+		interfaceName
+
+-------------------------------------------------------------------
+
+Composition/Aggregation:
+------------------------
+
+class Booking{
+	Member m;	//aggregation
+	Payment p;	//composition
+}
+
+Composition: 	filled diamond		diamond towards composing class
+Aggregation:	empty diamond		diamond towards aggregating class
+
+-------------------------------------------------------------------
+
+Assiciation:
+-------------
+
+Used straight line (no arraw)
+
+- Unidirectional association:
+	Notification	[		isSentTo]		Member
+			[		    1..*]
+
+- Bidirectional association:
+	Booking		[canDo		  doneBy]		Member 
+			[0..*		       1]
+
+	Customer	[orderedBy  	canOrder]		Order
+			[1		    0..*]
+
+
+- Reflexive association:
+	Member		[refer		referedBy]		Member 
+			[0..*		    	1]
+
+
+==============================================================================
+public class SomeClass{
+	
+}
+
+
+p s v m(...){
+
+	final int x=20;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

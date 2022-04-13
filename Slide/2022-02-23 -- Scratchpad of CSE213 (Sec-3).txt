@@ -1,0 +1,498 @@
+2022-02-23 -- Scratchpad of CSE213 (Sec-3)
+==========================================
+
+===================================================================================================
+****************************************** REUSING CLASS ******************************************
+===================================================================================================
+
+RELATIONSHIP AMONG CLASSES:
+===========================
+
+- In a project, classes can be related to each other in different ways based on how they are 
+	connected and interact with each other. 
+
+- In your system design (class diagram), you need to establish different
+	types of relationships that may exist among classes.
+
+- There can be four types of relationships, such as:
+	- Aggregation
+	- Composition
+	- Inheritance
+	- Association
+
+Aggregation/Composition:
+========================
+	- Where a class handle of a pre-existing class is a field of the new class being-defined
+	  Ex: 
+		library class: String
+		public class Employee{
+			...
+			String name, address;
+		}
+
+		public class Date{...}
+		public class Employee{
+			...
+			Date doj;	//aggregation/composition
+		}
+
+	- Aggregation/Composition establish "HAS-A" relationship among the classes
+	
+	- we need to ask the question "is the aggregating/composing class has the aggregated/composed class
+		instance as a field? 
+		- if the answer is "yes", then our aggregation/composition is logically CORRECT.
+		- if the answer is "no", then our aggregation/composition is logically INCORRECT.
+
+		project topic:	e-visa
+		pre-existing class name (to be aggregated/composed)	: Address
+		aggregating/composing class name			: Applicant
+		verdict							: Valid, Aggregation
+									  (as Employee also has Property)
+
+		project topic:	Land Registration
+		pre-existing class name (to be aggregated/composed)	: Property
+		aggregating/composing class name			: Seller
+		verdict							: Valid, Aggregation 
+									  (as RealEstateAgent user also has Property)
+
+		project topic:	Diognostic center
+		pre-existing class name (to be aggregated/composed)	: Cabin
+		aggregating/composing class name			: Receiptionist (HAS-A)
+		Proposed						: Aggregation, (as Doctor also HAS-A Cabin)
+		verdict							: Invalid, neither Aggregation nor Composition
+									  (Room instance is NOT a component/info of 
+										Reciptionist/Doctor)
+
+		project topic:	Food Delivery
+		pre-existing class name (to be aggregated/composed)	: TradeLicense
+		aggregating/composing class name			: Restaurant
+		verdict							: Vaid, Composition
+
+		project topic:	??
+		pre-existing class name (to be aggregated/composed)	: ??
+		aggregating/composing class name			: ??
+		verdict							: ??, ??
+	
+
+-----------------------------------------------------------------------------------------------
+
+Aggregation:
+============
+Aggregation implies a relationship where the aggregated class instance can exist independently 
+out of the aggregating class instances, too. 
+
+	  Ex: 
+		public class Date{...}
+
+		public class Employee{	//Employee is aggregating class
+			...
+			Date doj;	//aggregation, Data instances may exists out of Employee instances, too
+		}
+			
+		public class Student{
+			...
+			Date dob;	//aggregation/composition
+		}
+
+		public class Document{
+			Date dateCreated, dateLastModified;
+		}
+
+-----------------------------------------------------------------------------------------------
+
+Composition:
+============
+Composition implies a relationship where the composed class instance CAN'T exist independently 
+out of the composing class instances. 
+
+	  Ex: APP for IUB
+		public class Engine{...}
+		public class Car{
+			.....
+			Engine e;	
+			// COMPOSITION, as IUB will never ever stock an Engine instance
+			// there will be no independant Engine instance in IUB database
+		}
+
+
+	  Ex: APP for TOYOTA
+		public class Engine{...}
+		public class Car{
+			.....
+			Engine e;	
+			// Aggregation
+			// There will be Engine instance as a component of Car instance
+			// Also, TOYOTA will have independent Engine instances in its database as a spare parts
+		}
+
+
+		public class Cart{...}
+
+		public class Customer{
+			Cart shoppingCart;	//Composition
+		}
+
+
+		public class Student{
+			private String name, address;	//Composition, student name & address can't exist without Student instance
+			private static String uniName = "IUB";	//Aggregation
+		}
+
+		
+
+	pre-existing library class: String
+
+	public class Student{
+		private String name, address;	//composition
+		private static String uniName = "UIB";	//aggregation
+
+	}
+
+
+	Q: name,addredd are String handles which are field of Student class. Is it aggregation/compositon
+
+	A: 
+		Analyze the context. Can a name/address(String) instance exist independent of Student instance
+		
+===================================================================================================
+****************************************** INHERITANCE ********************************************
+===================================================================================================
+
+Inheritance:
+============
+
+	- As a successor (child), to acquire/inherit something from predecessor (parent)
+
+	- We can say that, a successor is an extension of the predecessor (from programming point of view)
+
+	- predecessor class is normally called as parent/base/super class
+		- in Java, the community use the term "superlass"
+
+	- successor class is normally called as child/derived/extended/sub class
+		- in Java, the community use the term "subclass"
+		- therefore, subclass is a MORE-SPECIFIC type of superclass
+
+		Ex:
+		public class Person{
+			fields: name, dob, gender, occupaton, nid, bg, maritalStatus, 
+				pAddress, religion, mobileNo, height, weight, drivingLiNo, ppNo,
+				bodyType, photo
+
+			methods: methodName1, methodName2,...
+		}
+
+		All Person instances have data for following fields:
+			name, dob, gender, occupaton, bg, maritalStatus, 
+			height, weight,	bodyType
+
+
+		Now we redefine Person class for the fields which qualifies for ALL Person instances
+
+		public class Person{		//TOO Generic to use in IRAS
+			fields: name, dob, gender, occupaton, bg, maritalStatus, 
+				height, weight,	bodyType
+
+			methods: methodName1, methodName2,...
+		}
+
+		- If a class don't have an unique identifier 
+		  this class is not useful to represent instances within an application's database
+
+		- In that case, this class is too generic to use within the application
+
+		- Then we can extend this class and add one/more unique identifier(s) and other additional
+			fields/methods relevant to the more specific new class
+
+		public class Employee exteds Person{	//Employee is a MORE Specific type of Person
+
+			fields: all fields from Person is already inherited in Employee
+				+ additional fields: 
+					empId, nid, pAddress, mobileNo, drivingLiNo, ppNo, photo, salary, designation
+
+			additional methods: all methods from Person is already inherited in Employee
+				+ additional methods: 				
+					methods: methodName3, methodName4,...	
+		}
+
+NOTE: 
+=====
+	- by default, a subclass inherits ALL FIELDS & ALL METHODS from it's superclass
+		- to make subclass more specific, the author of subclass can now include additional
+			fields and methods to the subclass
+		- we don't need to redeclare(or redefine) the inherited fields(or methods) in subclass
+		- if subclass author wants, s/he can overload an inherited method
+		- if subclass author wants, s/he can also OVERRIDE an inherited method (to be discussed).
+
+	- When we extend a superclass to a more-specific subclass, we need to ensure that,
+		there exists a "IS-A" relationship among those classes
+
+	- we need to ask the question "is the subclass is a more specific super class type"?
+		- if the answer is "yes" our extension is logically CORRECT.
+		- if the answer is "no" our extension is logically INCORRECT.
+
+	- Inheritance allow us to build classes for smaller modules and reuse them directly,
+		or extend them in different projects to satisfy specific need of those projects
+
+	- It also allows dynamic polymorphism (to be discussed)
+
+		Ex:
+		super class name:	Food
+		sub class name:		public class Burger extends Food{...}		//VALID
+
+		super class name:	MicroController
+		sub class name:		public class AC extends MicroController{...}	//INVALID
+
+		super class name:	Company
+		sub class name:		public class Microfost extends Company{...}	// INVALID
+		sub class name:		public class SoftwareFirm extends Company{...}	// VALID
+		Company microSoft = new Company(...);					// VALID
+
+		super class name:	Hospital
+		sub class name:		public class OT extends Hospital{...}		// INVALID
+
+		super class name:	Education
+		sub class name:		public class University extends Education{...}	// INVALID
+
+		super class name:	EducationalInstitute
+		sub class name:		public class University extends EducationalInstitute{...}	// VALID
+
+		super class name:	Employee
+		sub class name:		public class Accountant extends Employee{...}	// VALID
+
+		super class name:	Property
+		sub class name:		public class EmptyPlot extends Property{...}	// VALID
+		sub class name:		public class EmptyPlot extends Property{...}	// VALID
+
+		super class name:	Vehicle
+		sub class name:		public class Car extends Vehicle{...}	// VALID
+		sub class name:		public class Truck extends Vehicle{...}	// VALID
+
+		for IRAS
+		super class name:	Campus
+		sub class name:		public class Building extends Campus{...}	// INVALID
+
+		for IRAS
+		super class name:	Document
+		sub class name:		public class Assignment extends Document{...}	// VALID
+		sub class name:		public class Budget extends Document{...}	// VALID
+		sub class name:		public class Notice extends Document{...}	// VALID
+
+
+		super class name:	Course
+		sub class name:		public class OfferedCourse extends Course{...}	// VALID
+
+		Project: Ideal Products
+		super class name:	Card
+					fields: cardId, price, text, designId, noOfPage
+		sub class name:		public class WeedingCard extends Card{		//Valid
+						field:
+					}
+
+		Project: Wasa
+		super class name:	Equipment
+		sub class name:		public class Pump extends Equipment{...}		// VALID
+		sub class name:		public class FilterationDevice extends Equipment{...}	// VALID
+
+
+		Project: GoZayan
+		super class name:	PartnerOrganization
+		sub class name-1:	public class BusCompany extends PartnerOrganization{...} // VALID
+		sub class name-2:	public class Airline extends PartnerOrganization{...} // VALID
+
+		Project: uNID
+		super class name:	Police
+		sub class name:		public class SP extends ??{...}		// VALID
+
+		Project: ??
+		super class name:	??
+		sub class name:		public class ?? extends ??{...}		// VALID
+
+
+	- if subclass author wants, s/he can overload an inherited method
+	  ---------------------------------------------------------------
+		cout<<x<<y<<z;	//method chain
+		cout.operator<<(x).operator<<(y).operator<<(z);	//methods retuen client for next call
+
+		System.out.print(x).print(y).print(z);
+		//NOT allowed as overloaded print/println methods of PrintStream return void
+		//Thats why, we either write:
+			: System.out.print(x);	System.out.print(y);	System.out.print(z);
+			OR
+			System.out.print(x+","+y+","+z);
+
+			int x=12;
+			expected output on screen: "x=12"
+			System.out.print("x="); System.out.print(x); 	//valid
+			System.out.print("x="+x); 			//valid
+					"x=" is concatenated with text equivalent of x
+					"x=" is concatenated with "12"
+					we get "x=12"
+
+			(str1==str2) //allowed in C++ as == operator is overloaded in string class
+			(str1==str2) //NOT allowed in java as == operator is not implicitly overloaded
+			str1.equals(str2); returns boolean
+
+
+			System.out.print("x=").print(x);		//INVALID
+
+			//from library
+			public class PrintStream extends... implements.... {
+
+			}
+
+
+			//extended
+			public class MyPrintStream extends PrintStream {
+
+				//inherited method overloading in subclass
+				MyPrintStream print(Student s){		
+					//code to print the field values of parameter s
+					return this;
+				}
+
+			}
+
+
+			public class MainClass{
+				psvm(...){
+					MyPrintStream myOut = new MyPrintStream();
+					myOut.linkWithDeviceScreen();
+
+					Student asif = new Student(...);
+					myOut.print(asif).print("Good buy");
+				}
+			}
+---------------------------------------------------------------------------------------------------------
+Note:
+-----
+	- private scope makes the private field/method EXCLUSIVE to the class where the field is declared
+		or the method is defined
+	- this creates problem for subclass methods to directly assess inherited private fields, and as
+		a result, subclass methods are forced to use inherited non-private methods (getter/setter/other)
+		to access those inherited private fields
+
+	- Instead, if superclass author declares the fields as protected (also private method as protected method, if any)
+		so that the subclass method can freely access those inherited fields
+		- this makes the subclass code more intuitive and efficient to manage
+
+	- Therefore, as a superclass author, if you anticipate/know that your class can be extended in future,
+		you are expected to show the generocity to subclass authors by declaring private members as protected
+
+---------------------------------------------------------------------------------------------------------
+public class Student extends Person {
+    private int id; private float cgpa;
+        
+    public void showStudInfo(){
+        //this.showPersonInfo();
+	showPersonInfo();
+        System.out.println(", id="+id+", Cgpa="+cgpa);
+        
+    }
+}
+
+ComplexNo add(ComplexNo c){
+	temp.real = real + c.real;
+
+}
+
+
+
+public class SomeClass{
+	public void someMethod(Student st){
+		st.showStudInfo();	//someMethod is calling a new method "showStudInfo" of Student class
+		st.showPersonInfo();	//someMethod is calling an inherited method "showPersonInfo" of Student class
+	}
+}
+
+public class MainClass{
+	p s v main(...){
+		SomeClass obj = new SomeClass();
+		obj.someMethod();
+	}
+	
+}
+
+==========================================================================================================
+==========================================================================================================
+
+Constructor in Inheritance:
+===========================
+
+	- protected scope comes handy for inherited fields
+
+	- Follow the discussion made using NetBeans project. See recording for details
+
+==========================================================================================================
+==========================================================================================================
+
+Method overloading vs method overriding:
+----------------------------------------
+
+Method Overloading					Method Overriding
+------------------------------------------------	--------------------------------------------
+- we provide multiple definitions of a method with	- we redefine inherited method with SAME
+  varying parameter list as part of SAME class		  PARAMETER LIST in subclass
+
+- Aim: To keep ALL overloaded versions ready for 	- AIM: If subclass-author is UNHAPPY with the 
+  	executution for the same client. Depending 		definition of an inherited method, then
+	on actual parameter list, one of the 			the subclass author can define the
+	overloaded definitions will be executed			inherited method in subclass with same
+								parameter list.
+								- However, this will cause two definitions with same
+								  parameter list available to subclass which will
+								  create method overloading conflict. At this point
+								  to resolve the conflict, compiler will
+								  DE-ACTIVATE the inherited version & effectively
+								  there will be only redefined version available
+								  for execution, for subclass client. 
+								- this is a win-win situation for subclass author
+							    	  and compiler and this phenomena is called
+								  method OVERRIDING
+
+==========================================================================================================
+==========================================================================================================
+
+public class Person{...}
+public class Student extends Person{...}
+
+Q: According to the above code, is there any superclass of Student?
+A: Yes, Person is the superclass
+
+
+public classs Employee{
+	//...
+}
+
+Q: According to the above code, is there any superclass of Employee?
+A: 
+	- No (incorrect)
+	- Correct answer: YES
+	
+	- In human species, ADAM is the super-predessesor for ALL Human instance
+	- In Java species, "Object" is the super-predessesor for ALL classes in Java
+
+	- clas Object is the superclass of Employee
+
+
+Therefore, we can use an 'Object' class handle to represent an Employee instance
+Object obj = new Employee();
+--------------------------------------------------------
+
+public classs Person{
+	//...
+}
+
+public classs Student extends Person{
+	//...
+}
+
+Q: According to the above code, is 'Object' a superclass of Student?
+A: 
+	- Yes: indirectly
+	- Because, Person is the direct subclass of 'Object' and inherits all fields/methods from Object
+	  and subsequentely, Student inherits them from Person
+
+Therefore, we can use a 'Person' class handle to represent not only a Person instance, but also a Student instance
+Person p1, p2;
+p1 = new Person();
+p2 = new Student();
