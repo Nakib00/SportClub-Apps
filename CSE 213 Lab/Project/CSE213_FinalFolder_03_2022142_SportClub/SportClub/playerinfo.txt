@@ -1,2 +1,0 @@
-2022124,nakib,Football,Good,50000,Great,1997-04-04,2019-04-19
-543543,Disha,Foolball,Good,50000,Good,2022-04-04,2022-04-21

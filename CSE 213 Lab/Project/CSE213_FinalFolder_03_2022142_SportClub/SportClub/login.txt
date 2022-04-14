@@ -1,5 +1,0 @@
-nakib-1001-123-Manager
-hana-2001-123-Player
-rakib-3001-123-Coach
-abid-4001-123-Doctor
-disha-5001-123-Marchandise officer
